@@ -3,39 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Asianpaint Digital Fandeck</title>
+  <title>Asian Paints Digital Fandeck</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="https://www.asianpaints.com/etc.clientlibs/apcolourcatalogue/clientlibs/clientlib-global/resources/images/Favicon.webp" type="image/x-icon">
 </head>
 <body>
   <div class="ambient ambient-one"></div>
   <div class="ambient ambient-two"></div>
   <div class="ambient ambient-three"></div>
 
+  <!-- Header: brand, live search, and shortlist review CTA. -->
   <header class="topbar" aria-label="Main navigation">
-    <!-- <a class="brand" href="#" aria-label="ColourMaxx Home">
+    <a class="brand" href="#" aria-label="Asian Paints Home">
       <span class="brand-mark" aria-hidden="true">
         <span></span><span></span><span></span>
       </span>
       <span class="brand-copy">
-        <strong>Colour<span>Maxx</span></strong>
-        <small>PAINTS</small>
+        <strong>asian<span>paints</span></strong>
+        <small>Digital Fandeck</small>
       </span>
-    </a> -->
-
-     <a tabindex="0" href="https://www.asianpaints.com" class="brand img-wrapper track_ap_logo focus-visible-auto-imp">
-            <picture>
-              <img loading="eager" fetchpriority="high" height="32" width="50" alt="Asian Paints Home Page" title="Asian Paints Home Page" style="height: 100%;" src="https://www.asianpaints.com/etc.clientlibs/apcolourcatalogue/clientlibs/clientlib-global-unification/resources/images/header/asian-paints-logo.webp">
-            </picture>
-            <div class="fandeck-title" style="translate: none; rotate: none; scale: none; opacity: 1; transform: translate(0px, 0px);">
-              <span>digital fandeck</span>
-          </div>
     </a>
+
+    <!-- <div class="title-block">
+      <strong>Asian Paints</strong>
+      <span>Digital Fandeck</span>
+    </div> -->
 
     <div class="search-wrap" role="search">
       <i class="ri-search-line" aria-hidden="true"></i>
@@ -55,8 +51,8 @@
   <main class="app-shell">
     <section class="hero-copy" aria-label="Intro">
       <span class="eyebrow"><i class="ri-sparkling-2-line" aria-hidden="true"></i> Interactive colour explorer</span>
-      <h1>Spin through shades like a real fandeck.</h1>
-      <p>Use drag, arrows, chips, or search. Pick a shade to preview, save palette ideas, copy colour values, and build a small palette.</p>
+      <h1>Explore Asian Paints shades like a real fandeck.</h1>
+      <p>Use drag, arrows, colour-family chips, or search. Pick a shade to preview, shortlist colours, copy values, and build a clean selection.</p>
     </section>
 
     <section class="control-row" aria-label="Shade filters and actions">
@@ -69,10 +65,11 @@
 
       <div class="mini-actions">
         <button id="randomShade" class="pill-action" type="button"><i class="ri-shuffle-line" aria-hidden="true"></i> Surprise me</button>
-        <button id="toggleFavorites" class="pill-action" type="button"><i class="ri-heart-3-line" aria-hidden="true"></i> Favorites</button>
+        <button id="toggleFavorites" class="pill-action" type="button" aria-label="Show shortlisted shades"><i class="ri-bookmark-3-line" aria-hidden="true"></i> Shortlisted</button>
       </div>
     </section>
 
+    <!-- Main fandeck: vertical range, fan cards, and selected shade room preview. -->
     <section class="deck-section" aria-label="Digital fandeck canvas">
       <aside class="vertical-control" aria-label="Vertical shade range control">
         <span>Range</span>
@@ -131,7 +128,7 @@
     <section class="palette-tray" aria-label="Saved palette">
       <div>
         <strong>Colour selection</strong>
-        <span id="paletteHint">Use the + symbol on fan strips or tap smart palette tiles to shortlist colours.</span>
+        <span id="paletteHint">Use the + symbol on fan strips, Save shade, or smart palette tiles to shortlist colours.</span>
       </div>
       <div id="favoriteTray" class="favorite-tray"></div>
     </section>
@@ -139,6 +136,7 @@
     <p class="colour-note">*Digital colours are indicative only. Always verify with a physical shade card before final paint selection.</p>
   </main>
 
+  <!-- Shade details modal: opened from a fan card/strip. It intentionally does not show shortlisted colours. -->
   <div id="modalOverlay" class="modal-overlay" aria-hidden="true">
     <article class="shade-modal" role="dialog" aria-modal="true" aria-labelledby="modalShadeName">
       <button id="closeModal" class="modal-close" type="button" aria-label="Close details"><i class="ri-close-line" aria-hidden="true"></i></button>
@@ -172,6 +170,7 @@
     </article>
   </div>
 
+  <!-- Colour selection modal: opened only from the blue header CTA. -->
   <div id="selectionOverlay" class="selection-overlay" aria-hidden="true">
     <article class="selection-modal" role="dialog" aria-modal="true" aria-labelledby="selectionModalTitle">
       <header class="selection-modal-head">

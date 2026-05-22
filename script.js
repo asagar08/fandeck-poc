@@ -1,34 +1,27 @@
 /* global $, gsap, Draggable, tinycolor */
 
-const DATA_URL = "https://www.asianpaints.com/content/ap/en/home/colour-catalogue/jcr:content/root/responsivegrid_602603264/shadelisting.shade.json?selectedShadeFamily=all&language=en&shadeMapper=false";
+/**
+ * Asian Paints Digital Fandeck
+ * ------------------------------------------------------------
+ * Data strategy:
+ * - This static project reads shade data from the local `apcatalogue.json` file.
+ * - No live Asian Paints API, local Node proxy, Netlify function, or server file is required.
+ * - For custom data, set `window.ASIAN_PAINTS_FANDECK = { dataUrl: "your-file.json" }`
+ *   before loading this script.
+ *
+ * UI strategy:
+ * - Fan card/strip click opens the shade details modal only.
+ * - Plus / save buttons shortlist colours and update the header CTA badge.
+ * - Header CTA opens the separate Colour Selection modal.
+ */
+const CONFIG = window.ASIAN_PAINTS_FANDECK || {};
+const CATALOGUE_DATA_URL = CONFIG.dataUrl || "apcatalogue.json";
+
 const MAX_CARDS_DESKTOP = 47;
 const MAX_CARDS_MOBILE = 31;
-const FAVORITE_KEY = "colourmaxx-fandeck-favorites-v1";
-const PALETTE_KEY = "colourmaxx-fandeck-selection-v2";
+const FAVORITE_KEY = "asianpaints-fandeck-favorites-v1";
+const PALETTE_KEY = "asianpaints-fandeck-selection-v1";
 const MAX_SELECTION = 8;
-
-const fallbackShades = [
-  { id: "fb-1", name: "Blue Dawn", code: "7275", hex: "#d9ecf4", family: "Blue" },
-  { id: "fb-2", name: "Sea Ridge", code: "7370", hex: "#b7dde3", family: "Blue" },
-  { id: "fb-3", name: "Imperial Blue", code: "7245", hex: "#315f8e", family: "Blue" },
-  { id: "fb-4", name: "Pistachio", code: "9385", hex: "#d9e6b2", family: "Green" },
-  { id: "fb-5", name: "Jade Impact", code: "7526", hex: "#7fc2a6", family: "Teal" },
-  { id: "fb-6", name: "Emerald Satin", code: "7502", hex: "#1f9d7a", family: "Teal" },
-  { id: "fb-7", name: "Lemon Sprig", code: "7873", hex: "#f3e482", family: "Yellow" },
-  { id: "fb-8", name: "Golden Ray", code: "7870", hex: "#f2c25a", family: "Yellow" },
-  { id: "fb-9", name: "Peach Rose", code: "7994", hex: "#f4b6a3", family: "Orange" },
-  { id: "fb-10", name: "Sunset Cloud", code: "7976", hex: "#e9895f", family: "Orange" },
-  { id: "fb-11", name: "Rose Mist", code: "8055", hex: "#f1c7ce", family: "Pink And Red" },
-  { id: "fb-12", name: "Berry Brunch", code: "8133", hex: "#c65c7a", family: "Pink And Red" },
-  { id: "fb-13", name: "Moon Crater", code: "8248", hex: "#b7b4ac", family: "Grey" },
-  { id: "fb-14", name: "Charcoal Shadow", code: "8286", hex: "#5c5f63", family: "Grey" },
-  { id: "fb-15", name: "Timber Ridge", code: "8633", hex: "#9b6f53", family: "Brown" },
-  { id: "fb-16", name: "Almond White", code: "8692", hex: "#f0e7d8", family: "Whites" },
-  { id: "fb-17", name: "White Satin", code: "L119", hex: "#f8f6ec", family: "Whites" },
-  { id: "fb-18", name: "Vintage Walnut", code: "8773", hex: "#76543f", family: "Brown" },
-  { id: "fb-19", name: "Mauve Halo", code: "8144", hex: "#d6c1d3", family: "Purple" },
-  { id: "fb-20", name: "Grape Spread", code: "9160", hex: "#7b6a96", family: "Purple" }
-];
 
 const state = {
   all: [],
@@ -43,7 +36,14 @@ const state = {
   dragProxy: null,
   isDragging: false,
   lastQuery: "",
-  suppressFanClickUntil: 0
+  suppressFanClickUntil: 0,
+  dataSource: "",
+  deckWindow: { key: "", start: 0, end: 0 },
+  swipeFrame: null,
+  swipePendingIndex: null,
+  // Holds the exact colour currently displayed in the details popup.
+  // This can be the main API shade or a generated cap/strip sample.
+  currentModalColor: null
 };
 
 const dom = {};
@@ -61,15 +61,20 @@ async function init() {
 
   try {
     const shades = await fetchShadeData();
-    state.all = shades.length ? shades : buildFallbackSet();
-    if (!shades.length) showToast("Using fallback shades because the live JSON returned no usable colours.");
+    state.all = prepareShadeList(shades);
+
+    if (!state.all.length) {
+      showDataError("The shade API responded, but no usable colours were found. Please confirm the API returns shade name/code plus HEX or RGB values.");
+      return;
+    }
+
+    showToast(`Loaded ${state.all.length} Asian Paints shades.`);
   } catch (error) {
-    console.warn("Shade data fetch failed. Fallback data loaded.", error);
-    state.all = buildFallbackSet();
-    showToast("Live shade JSON could not load, so fallback shades are visible.");
+    console.warn("Catalogue data fetch failed.", error);
+    showDataError(`Could not load apcatalogue.json. Run the project through a static web server, not by double-clicking index.html. ${error.message || ""}`);
+    return;
   }
 
-  state.all = prepareShadeList(state.all);
   state.filtered = [...state.all];
   state.selectedId = state.filtered[0]?.id || null;
 
@@ -140,6 +145,7 @@ function registerPlugins() {
 }
 
 function bindEvents() {
+  // Range/arrow controls update the selected shade without page-scroll side effects.
   dom.range.on("input", function () {
     setSelectedIndex(Number(this.value), { source: "range" });
   });
@@ -167,6 +173,7 @@ function bindEvents() {
     setSelectedIndex(Math.round(ratio * (state.filtered.length - 1)), { source: "progress" });
   });
 
+  // Header CTA is the only entry point for the Colour Selection popup.
   dom.openDetails.on("click", openSelectionModal);
   dom.selectedBeacon.on("click", () => openModal(getSelectedShade()));
   dom.closeModal.on("click", closeModal);
@@ -179,7 +186,7 @@ function bindEvents() {
   });
 
   dom.favoriteCurrent.on("click", () => shortlistShade(getSelectedShade(), dom.favoriteCurrent[0]));
-  dom.modalFavorite.on("click", () => shortlistShade(getSelectedShade(), dom.modalFavorite[0]));
+  dom.modalFavorite.on("click", () => shortlistShade(state.currentModalColor || getSelectedShade(), dom.modalFavorite[0]));
   dom.toggleFavorites.on("click", toggleFavoritesFilter);
 
   dom.search.on("input", debounce(handleSearchInput, 80));
@@ -198,6 +205,7 @@ function bindEvents() {
     dom.suggestions.hide();
   });
 
+  // Plus buttons shortlist exact strip colours without opening the details popup.
   dom.fanDeck.on("click", ".strip-add", function (event) {
     if (shouldSuppressFanClick()) {
       event.preventDefault();
@@ -217,6 +225,9 @@ function bindEvents() {
     savePaletteColor(sample, { origin: this });
   });
 
+  // Clicking a card cap/strip opens the details popup for that exact sample.
+  // The fan card still becomes active, but the popup uses the clicked tile colour,
+  // role, and generated tint instead of always showing the base card shade.
   dom.fanDeck.on("click", ".card-cap, .card-strip", function (event) {
     if (shouldSuppressFanClick()) {
       event.preventDefault();
@@ -230,7 +241,9 @@ function bindEvents() {
     if (!shade) return;
     const index = state.filtered.findIndex(item => item.id === shade.id);
     if (index >= 0) setSelectedIndex(index, { source: "strip" });
-    openModal(getSelectedShade());
+
+    const sample = shadeSampleFromElement(shade, this);
+    openModal(sample || getSelectedShade(), { sample });
   });
 
   dom.fanDeck.on("click", ".fan-card", function (event) {
@@ -267,6 +280,11 @@ function bindEvents() {
     if (shadeId) selectById(shadeId, { source: "selection" });
   });
 
+  // Compact tray CTA opens the dedicated Colour Selection popup.
+  dom.favoriteTray.on("click", ".review-selection", function () {
+    openSelectionModal();
+  });
+
   dom.selectionBento.on("click", ".remove-selection", function (event) {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -296,7 +314,7 @@ function bindEvents() {
 
 
   $(".copy-chip").on("click", function () {
-    const shade = getSelectedShade();
+    const shade = state.currentModalColor || getSelectedShade();
     if (!shade) return;
     const type = $(this).data("copy");
     const value = type === "rgb" ? shade.rgbText : type === "code" ? shade.code : shade.hex;
@@ -310,11 +328,50 @@ function bindEvents() {
 }
 
 async function fetchShadeData() {
-  const response = await fetch(DATA_URL, { cache: "force-cache" });
-  if (!response.ok) throw new Error(`Shade JSON failed with HTTP ${response.status}`);
-  const payload = await response.json();
-  const raw = extractShadeObjects(payload);
-  return raw.map((item, index) => normalizeShade(item, index)).filter(Boolean);
+  // The uploaded Asian Paints catalogue is shaped as:
+  // { success: true, shade: [{ entityName, entityCode, shadeFamily, shadeHexCode, ... }] }
+  // We also keep support for { shades: [...] } and nested shade objects for easy reuse.
+  const response = await fetch(CATALOGUE_DATA_URL, {
+    cache: "no-store",
+    headers: { Accept: "application/json,text/plain,*/*" }
+  });
+
+  const rawText = await response.text();
+  if (!response.ok) {
+    throw new Error(`${CATALOGUE_DATA_URL} returned HTTP ${response.status}.`);
+  }
+
+  const payload = parsePossiblyWrappedJson(rawText);
+  state.dataSource = CATALOGUE_DATA_URL;
+
+  const raw = Array.isArray(payload?.shade)
+    ? payload.shade
+    : Array.isArray(payload?.shades)
+      ? payload.shades
+      : Array.isArray(payload)
+        ? payload
+        : extractShadeObjects(payload);
+
+  const shades = raw.map((item, index) => normalizeShade(item, index)).filter(Boolean);
+  if (!shades.length) {
+    throw new Error("Catalogue JSON loaded, but no usable shade entries with name/code and HEX/RGB were found.");
+  }
+
+  return shades;
+}
+
+function parsePossiblyWrappedJson(text) {
+  const trimmed = String(text || "").trim();
+  if (!trimmed) throw new Error("Shade API returned an empty response.");
+
+  // AEM services sometimes prefix JSON responses. Strip a common anti-XSSI
+  // prefix before parsing.
+  const cleaned = trimmed.replace(/^\)\]\}'\s*,?\s*/, "");
+  try {
+    return JSON.parse(cleaned);
+  } catch (error) {
+    throw new Error(`Shade API did not return valid JSON. First characters: ${cleaned.slice(0, 80)}`);
+  }
 }
 
 function extractShadeObjects(payload) {
@@ -336,7 +393,7 @@ function extractShadeObjects(payload) {
       family: readAny(node, [
         "shadeFamily", "shadefamily", "shadeFamilyName", "family", "familyName", "colourFamily",
         "colorFamily", "colourFamilyName", "colorFamilyName", "filterName", "category", "categoryName",
-        "shadeGroup", "shadeGroupName", "groupName"
+        "shadeGroup", "shadeGroupName", "groupName", "shade_family", "entityType"
       ]) || context.family
     };
 
@@ -360,9 +417,9 @@ function extractShadeObjects(payload) {
 
 function looksLikeShade(obj) {
   const hasNameOrCode = Boolean(readAny(obj, [
-    "shadeName", "shade_name", "name", "colourName", "colorName", "title", "shadeTitle", "label", "shade"
+    "shadeName", "shade_name", "shadename", "name", "colourName", "colorName", "title", "shadeTitle", "label", "shade", "displayName", "productName", "colorLabel", "colourLabel", "entityName"
   ]) || readAny(obj, [
-    "shadeCode", "shade_code", "code", "shadeNo", "shadeNumber", "colourCode", "colorCode", "shadeId", "id"
+    "shadeCode", "shade_code", "code", "shadeNo", "shadeNumber", "colourCode", "colorCode", "shadeId", "id", "entityCode"
   ]));
   const hasColor = Boolean(extractHex(obj) || readAny(obj, ["rgb", "shadeRGB", "shadeRgb", "rgbValue", "colorRgb", "colourRgb"]));
   return hasNameOrCode && hasColor;
@@ -373,17 +430,19 @@ function normalizeShade(obj, index) {
   if (!hex) return null;
 
   const code = cleanText(readAny(obj, [
-    "shadeCode", "shade_code", "code", "shadeNo", "shadeNumber", "colourCode", "colorCode", "shadeId", "id", "sapCode"
+    "shadeCode", "shade_code", "shadecode", "code", "shadeNo", "shadeNumber", "shadeNbr", "shadeNum", "colourCode", "colorCode", "colour_code", "color_code", "shadeId", "id", "sapCode", "sku", "colorId", "colourId", "entityCode"
   ])) || `C${String(index + 1).padStart(4, "0")}`;
 
   const name = cleanText(readAny(obj, [
-    "shadeName", "shade_name", "name", "colourName", "colorName", "title", "shadeTitle", "label", "shade"
+    "shadeName", "shade_name", "shadename", "name", "colourName", "colorName", "title", "shadeTitle", "label", "shade", "displayName", "productName", "colorLabel", "colourLabel", "entityName"
   ])) || `Shade ${code}`;
 
-  const family = cleanText(readAny(obj, [
+  const rawFamily = cleanText(readAny(obj, [
     "shadeFamily", "shadefamily", "shadeFamilyName", "family", "familyName", "colourFamily", "colorFamily",
-    "colourFamilyName", "colorFamilyName", "filterName", "category", "categoryName", "shadeGroup", "shadeGroupName", "groupName"
+    "colourFamilyName", "colorFamilyName", "filterName", "category", "categoryName", "shadeGroup", "shadeGroupName", "groupName", "shade_family", "entityType"
   ]) || obj.__contextFamily) || autoFamily(hex);
+  const normalizedFamily = normalizeFamily(rawFamily);
+  const family = normalizedFamily === "All" ? autoFamily(hex) : normalizedFamily;
 
   const rgb = hexToRgb(hex);
   const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
@@ -393,10 +452,14 @@ function normalizeShade(obj, index) {
     name,
     code: String(code).trim(),
     hex,
-    family: normalizeFamily(family),
+    family,
     rgb,
     rgbText: `${rgb.r}, ${rgb.g}, ${rgb.b}`,
     hsl,
+    estimated: Boolean(obj.estimated || obj.isApprox),
+    isApprox: Boolean(obj.isApprox || obj.estimated),
+    source: obj.source || "apcatalogue",
+    sourceUrl: obj.sourceUrl || obj.pageUrl || "",
     search: `${name} ${code} ${family}`.toLowerCase()
   };
 }
@@ -422,20 +485,47 @@ function prepareShadeList(list) {
 
 function extractHex(obj) {
   const direct = readAny(obj, [
-    "hex", "hexCode", "shadeHex", "shadeHexCode", "colorHex", "colourHex", "htmlColor", "htmlColour",
-    "rgbHexCode", "rgbHex", "shadeRGB", "shadeRgb", "rgb", "rgbValue", "color", "colour", "value"
+    "hex", "hexCode", "hexcode", "shadeHex", "shadeHexCode", "shadeHexadecimalCode", "hexadecimal", "hexadecimalCode", "colorHex", "colourHex", "colorHexCode", "colourHexCode", "htmlColor", "htmlColour",
+    "rgbHexCode", "rgbHex", "webHex", "swatchHex", "shadeRGB", "shadeRgb", "rgb", "rgbValue", "rgbCode", "rgbcode", "rgb_code", "shadeRGBValue", "shadeRgbValue", "colorRgb", "colourRgb", "colorRGB", "colourRGB", "shadeColor", "shadeColour", "background", "backgroundColor", "bgColor", "color", "colour", "value"
   ]);
 
   if (Array.isArray(direct)) return rgbArrayToHex(direct);
   if (typeof direct === "object" && direct) {
-    const nestedHex = readAny(direct, ["hex", "hexCode", "value"]);
+    const nestedHex = readAny(direct, ["hex", "hexCode", "value", "color", "colour"]);
     if (nestedHex) return nestedHex;
     if (["r", "g", "b"].every(key => key in direct)) return rgbToHex(Number(direct.r), Number(direct.g), Number(direct.b));
+    if (["red", "green", "blue"].every(key => key in direct)) return rgbToHex(Number(direct.red), Number(direct.green), Number(direct.blue));
   }
   if (typeof direct === "string") {
     if (/rgb\s*\(/i.test(direct)) return rgbStringToHex(direct);
-    return direct;
+    const numericTriple = direct.match(/^\s*(\d{1,3})\s*[,| ]\s*(\d{1,3})\s*[,| ]\s*(\d{1,3})\s*$/);
+    if (numericTriple) return rgbToHex(Number(numericTriple[1]), Number(numericTriple[2]), Number(numericTriple[3]));
+    const styleHex = direct.match(/background(?:-color)?\s*:\s*(#[0-9a-f]{3,8}|rgba?\([^)]+\))/i)?.[1];
+    if (styleHex) return /rgb\s*\(/i.test(styleHex) ? rgbStringToHex(styleHex) : styleHex;
+    const embeddedHex = direct.match(/#[0-9a-f]{3}(?:[0-9a-f]{3})?\b/i)?.[0] || direct.match(/\b[0-9a-f]{6}\b/i)?.[0];
+    return embeddedHex || direct;
   }
+
+  const triples = [
+    ["r", "g", "b"],
+    ["R", "G", "B"],
+    ["red", "green", "blue"],
+    ["Red", "Green", "Blue"],
+    ["shadeR", "shadeG", "shadeB"],
+    ["shadeRed", "shadeGreen", "shadeBlue"],
+    ["redValue", "greenValue", "blueValue"],
+    ["rValue", "gValue", "bValue"]
+  ];
+
+  for (const [rk, gk, bk] of triples) {
+    const r = readAny(obj, [rk]);
+    const g = readAny(obj, [gk]);
+    const b = readAny(obj, [bk]);
+    if ([r, g, b].every(value => value !== null && value !== undefined && value !== "" && !Number.isNaN(Number(value)))) {
+      return rgbToHex(Number(r), Number(g), Number(b));
+    }
+  }
+
   return null;
 }
 
@@ -455,24 +545,7 @@ function readAny(obj, keys) {
   return null;
 }
 
-function buildFallbackSet() {
-  const expanded = [];
-  fallbackShades.forEach((shade, familyIndex) => {
-    for (let i = 0; i < 5; i += 1) {
-      const color = shiftColor(shade.hex, (i - 2) * 6, (i - 2) * -2);
-      expanded.push({
-        ...shade,
-        id: `${shade.id}-${i}`,
-        name: i === 2 ? shade.name : `${shade.name} ${i < 2 ? "Light" : "Deep"} ${Math.abs(i - 2)}`,
-        code: `${shade.code}${i ? `-${i}` : ""}`,
-        hex: color,
-        family: shade.family || ["Blue", "Green", "Yellow", "Pink", "Neutral"][familyIndex % 5]
-      });
-    }
-  });
-  return expanded;
-}
-
+// Builds colour-family chips from the API response; no family list is hardcoded in HTML.
 function buildCategoryTabs() {
   const familyCounts = new Map();
   state.all.forEach(shade => familyCounts.set(shade.family, (familyCounts.get(shade.family) || 0) + 1));
@@ -503,7 +576,7 @@ function buildCategoryTabs() {
 function applyFilter(family, options = {}) {
   state.category = family || "All";
   state.favoritesOnly = false;
-  dom.toggleFavorites.removeClass("active").find("i").attr("class", "ri-heart-3-line");
+  updateShortlistToggle();
 
   dom.tabs.find(".tab").removeClass("active").attr("aria-selected", "false");
   dom.tabs.find(".tab").filter((_, tab) => $(tab).data("family") === state.category).addClass("active").attr("aria-selected", "true");
@@ -516,17 +589,18 @@ function applyFilter(family, options = {}) {
 }
 
 function toggleFavoritesFilter() {
+  // The old button name was “Favorites”. It now behaves as a clearer
+  // “Shortlisted” filter, using the same colours shown in the header CTA.
   state.favoritesOnly = !state.favoritesOnly;
-  dom.toggleFavorites.toggleClass("active", state.favoritesOnly)
-    .find("i")
-    .attr("class", state.favoritesOnly ? "ri-heart-3-fill" : "ri-heart-3-line");
+  updateShortlistToggle();
 
   if (state.favoritesOnly) {
-    state.filtered = state.all.filter(shade => state.favorites.has(shade.id));
+    const shortlistedIds = getShortlistedShadeIds();
+    state.filtered = state.all.filter(shade => shortlistedIds.has(shade.id));
     if (!state.filtered.length) {
-      showToast("No favourites yet. Tap a heart on any shade to save one.");
+      showToast("No shortlisted shades yet. Tap + on a fan strip or Save shade first.");
       state.favoritesOnly = false;
-      dom.toggleFavorites.removeClass("active").find("i").attr("class", "ri-heart-3-line");
+      updateShortlistToggle();
       applyFilter(state.category, { silent: true });
       return;
     }
@@ -592,28 +666,86 @@ function stepShade(step) {
 
 function renderDeck(options = {}) {
   const shades = state.filtered;
-  dom.fanDeck.empty();
+  const selectedShade = getSelectedShade();
 
   if (!shades.length) {
-    dom.fanDeck.html(`<div class="empty-tray">No shades available</div>`);
+    state.deckWindow = { key: "", start: 0, end: 0 };
+    dom.fanDeck.html(`<div class="empty-tray">No shades available in apcatalogue.json</div>`);
     return;
   }
 
   const maxCards = window.matchMedia("(max-width: 820px)").matches ? MAX_CARDS_MOBILE : MAX_CARDS_DESKTOP;
   const visibleCount = Math.min(maxCards, shades.length);
-  const half = Math.floor(visibleCount / 2);
-  let start = clamp(state.selectedIndex - half, 0, Math.max(0, shades.length - visibleCount));
-  const end = Math.min(start + visibleCount, shades.length);
-  start = Math.max(0, end - visibleCount);
-
+  const windowKey = deckWindowKey(shades, visibleCount);
+  const { start, end } = computeDeckWindow(shades, visibleCount, windowKey);
   const centerSlot = state.selectedIndex - start;
   const maxSpread = window.matchMedia("(max-width: 820px)").matches ? 58 : 63;
   const gap = visibleCount > 1 ? Math.min(6.2, (maxSpread * 2) / Math.max(1, visibleCount - 1)) : 0;
-  const selectedShade = getSelectedShade();
+
+  const sameWindow = !options.force
+    && state.deckWindow.key === windowKey
+    && state.deckWindow.start === start
+    && state.deckWindow.end === end
+    && dom.fanDeck.find(".fan-card").length === end - start;
+
+  // For mobile swipes, updating existing DOM nodes avoids the blink caused by
+  // deleting/recreating 30+ cards on every shade step.
+  if (sameWindow) {
+    updateDeckCardStates({ shades, start, end, centerSlot, gap, selectedShade, animate: options.animate !== false });
+    return;
+  }
 
   const html = [];
   for (let slot = 0; slot < end - start; slot += 1) {
+    html.push(fanCardMarkup(shades[start + slot], slot, { start, centerSlot, gap, selectedShade }));
+  }
+
+  dom.fanDeck.html(html.join(""));
+  state.deckWindow = { key: windowKey, start, end };
+  animateDeckSpin(options.animate !== false);
+
+  if (window.gsap && options.animate !== false && !state.isDragging) {
+    gsap.fromTo(dom.fanDeck.find(".fan-card"),
+      { y: 18, opacity: 0.75 },
+      { y: 0, opacity: 1, duration: 0.42, ease: "power3.out", stagger: { each: 0.006, from: "center" } }
+    );
+  }
+}
+
+function fanCardMarkup(shade, slot, context) {
+  const { start, centerSlot, gap, selectedShade } = context;
+  const rel = slot - centerSlot;
+  const angle = rel * gap;
+  const isActive = shade.id === selectedShade?.id;
+  const isFavorite = state.favorites.has(shade.id);
+  const isShortlisted = isShadeShortlisted(shade);
+  const lift = isActive ? -20 : Math.max(-9, -Math.abs(rel) * 0.16);
+  const z = 300 - Math.abs(rel);
+  const tintA = shiftColor(shade.hex, 17, 6);
+  const tintB = shiftColor(shade.hex, 10, 3);
+  const tintC = shade.hex;
+  const tintD = shiftColor(shade.hex, -8, -2);
+
+  return `
+    <button class="fan-card${isActive ? " active" : ""}${isFavorite ? " favorite" : ""}${isShortlisted ? " shortlisted" : ""}" type="button"
+      data-id="${escapeAttr(shade.id)}"
+      data-slot="${start + slot}"
+      title="${escapeAttr(`${shade.name} ${shade.code}`)}"
+      style="--angle:${angle.toFixed(3)}deg;--lift:${lift}px;--card-bg:${shade.hex};z-index:${z};">
+      <span class="card-fav" aria-label="Shortlist ${escapeAttr(shade.name)}"><i class="${isShortlisted ? "ri-check-line" : "ri-add-line"}"></i></span>
+      <div class="card-cap" data-hex="${escapeAttr(tintA)}" data-role="Light top" data-label="${escapeAttr(`${shade.name} Light Top`)}" style="background:${tintA}"><span class="strip-code">${escapeHtml(shade.code)}</span><span class="strip-add" aria-hidden="true">+</span></div>
+      <div class="card-strip" data-hex="${escapeAttr(tintA)}" data-role="Soft tint" data-label="${escapeAttr(`${shade.name} Soft Tint`)}" style="background:${tintA}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 0))}</span><span class="strip-add" aria-hidden="true">+</span></div>
+      <div class="card-strip" data-hex="${escapeAttr(tintB)}" data-role="Wall tone" data-label="${escapeAttr(`${shade.name} Wall Tone`)}" style="background:${tintB}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 1))}</span><span class="strip-add" aria-hidden="true">+</span></div>
+      <div class="card-strip" data-hex="${escapeAttr(tintC)}" data-role="Primary" data-label="${escapeAttr(shade.name)}" style="background:${tintC}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 2))}</span><span class="strip-add" aria-hidden="true">+</span></div>
+      <div class="card-strip" data-hex="${escapeAttr(tintD)}" data-role="Deep accent" data-label="${escapeAttr(`${shade.name} Deep Accent`)}" style="background:${tintD}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 3))}</span><span class="strip-add" aria-hidden="true">+</span></div>
+      <span class="card-name">${escapeHtml(shade.name)}</span>
+    </button>`;
+}
+
+function updateDeckCardStates({ shades, start, end, centerSlot, gap, selectedShade, animate }) {
+  dom.fanDeck.find(".fan-card").each(function (slot) {
     const shade = shades[start + slot];
+    if (!shade) return;
     const rel = slot - centerSlot;
     const angle = rel * gap;
     const isActive = shade.id === selectedShade?.id;
@@ -621,36 +753,57 @@ function renderDeck(options = {}) {
     const isShortlisted = isShadeShortlisted(shade);
     const lift = isActive ? -20 : Math.max(-9, -Math.abs(rel) * 0.16);
     const z = 300 - Math.abs(rel);
-    const tintA = shiftColor(shade.hex, 17, 6);
-    const tintB = shiftColor(shade.hex, 10, 3);
-    const tintC = shade.hex;
-    const tintD = shiftColor(shade.hex, -8, -2);
 
-    html.push(`
-      <button class="fan-card${isActive ? " active" : ""}${isFavorite ? " favorite" : ""}${isShortlisted ? " shortlisted" : ""}" type="button"
-        data-id="${escapeAttr(shade.id)}"
-        title="${escapeAttr(`${shade.name} ${shade.code}`)}"
-        style="--angle:${angle.toFixed(3)}deg;--lift:${lift}px;--card-bg:${shade.hex};z-index:${z};">
-        <span class="card-fav" aria-label="Shortlist ${escapeAttr(shade.name)}"><i class="${isShortlisted ? "ri-check-line" : "ri-add-line"}"></i></span>
-        <div class="card-cap" data-hex="${escapeAttr(tintA)}" data-role="Light top" data-label="${escapeAttr(`${shade.name} Light Top`)}" style="background:${tintA}"><span class="strip-code">${escapeHtml(shade.code)}</span><span class="strip-add" aria-hidden="true">+</span></div>
-        <div class="card-strip" data-hex="${escapeAttr(tintA)}" data-role="Soft tint" data-label="${escapeAttr(`${shade.name} Soft Tint`)}" style="background:${tintA}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 0))}</span><span class="strip-add" aria-hidden="true">+</span></div>
-        <div class="card-strip" data-hex="${escapeAttr(tintB)}" data-role="Wall tone" data-label="${escapeAttr(`${shade.name} Wall Tone`)}" style="background:${tintB}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 1))}</span><span class="strip-add" aria-hidden="true">+</span></div>
-        <div class="card-strip" data-hex="${escapeAttr(tintC)}" data-role="Primary" data-label="${escapeAttr(shade.name)}" style="background:${tintC}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 2))}</span><span class="strip-add" aria-hidden="true">+</span></div>
-        <div class="card-strip" data-hex="${escapeAttr(tintD)}" data-role="Deep accent" data-label="${escapeAttr(`${shade.name} Deep Accent`)}" style="background:${tintD}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 3))}</span><span class="strip-add" aria-hidden="true">+</span></div>
-        <span class="card-name">${escapeHtml(shade.name)}</span>
-      </button>`);
-  }
+    this.style.setProperty("--angle", `${angle.toFixed(3)}deg`);
+    this.style.setProperty("--lift", `${lift}px`);
+    this.style.zIndex = String(z);
+    $(this)
+      .toggleClass("active", isActive)
+      .toggleClass("favorite", isFavorite)
+      .toggleClass("shortlisted", isShortlisted)
+      .attr("title", `${shade.name} ${shade.code}`)
+      .find(".card-fav i")
+      .attr("class", isShortlisted ? "ri-check-line" : "ri-add-line");
+  });
+  animateDeckSpin(animate && !state.isDragging);
+}
 
-  dom.fanDeck.html(html.join(""));
-
+function animateDeckSpin(animate = true) {
+  const shades = state.filtered;
+  const spin = ((state.selectedIndex / Math.max(1, shades.length - 1)) * -10) + 5;
   if (window.gsap) {
-    const spin = ((state.selectedIndex / Math.max(1, shades.length - 1)) * -10) + 5;
-    gsap.to(dom.fanDeck[0], { "--deck-spin": `${spin}deg`, duration: options.animate === false ? 0 : 0.55, ease: "power3.out" });
-    gsap.fromTo(dom.fanDeck.find(".fan-card"),
-      { y: options.animate === false ? 0 : 18, opacity: options.animate === false ? 1 : 0.75 },
-      { y: 0, opacity: 1, duration: options.animate === false ? 0 : 0.42, ease: "power3.out", stagger: { each: 0.006, from: "center" } }
-    );
+    gsap.to(dom.fanDeck[0], { "--deck-spin": `${spin}deg`, duration: animate ? 0.35 : 0, ease: "power3.out" });
+  } else {
+    dom.fanDeck.css("--deck-spin", `${spin}deg`);
   }
+}
+
+function deckWindowKey(shades, visibleCount) {
+  return [
+    state.category,
+    state.favoritesOnly ? "fav" : "all",
+    visibleCount,
+    shades.length,
+    shades[0]?.id || "",
+    shades[shades.length - 1]?.id || ""
+  ].join("|");
+}
+
+function computeDeckWindow(shades, visibleCount, windowKey) {
+  const maxStart = Math.max(0, shades.length - visibleCount);
+  const old = state.deckWindow || { key: "", start: 0, end: 0 };
+  const buffer = window.matchMedia("(max-width: 820px)").matches ? 5 : 8;
+
+  if (old.key === windowKey && old.end - old.start === visibleCount) {
+    const insideBufferedWindow = state.selectedIndex >= old.start + buffer && state.selectedIndex < old.end - buffer;
+    if (insideBufferedWindow) return { start: old.start, end: old.end };
+  }
+
+  const half = Math.floor(visibleCount / 2);
+  let start = clamp(state.selectedIndex - half, 0, maxStart);
+  let end = Math.min(start + visibleCount, shades.length);
+  start = Math.max(0, end - visibleCount);
+  return { start, end };
 }
 
 function syncUi() {
@@ -689,21 +842,25 @@ function syncUi() {
   dom.selectedBeacon.css({ color: textColor === "#ffffff" ? "#0f172a" : "#0f172a" });
 }
 
-function openModal(shade) {
+function openModal(shade, options = {}) {
   if (!shade) return;
-  closeSelectionModal();
-  dom.overlay.css("--modal-color", shade.hex);
-  dom.overlay.find(".shade-modal").css("--modal-color", shade.hex);
-  dom.modalSwatch.css("--modal-color", shade.hex);
-  dom.modalFamily.text(shade.family);
-  dom.modalShadeName.text(shade.name);
-  dom.modalShadeCode.text(`Shade code ${shade.code}`);
-  dom.modalHex.text(shade.hex.toUpperCase());
-  dom.modalRgb.text(shade.rgbText);
-  dom.modalCode.text(shade.code);
-  updateModalShortlistState(shade);
+  closeSelectionModal({ instant: true });
 
-  buildSmartPalette(shade);
+  const modalColour = normalizeModalColour(options.sample || shade);
+  state.currentModalColor = modalColour;
+
+  dom.overlay.css("--modal-color", modalColour.hex);
+  dom.overlay.find(".shade-modal").css("--modal-color", modalColour.hex);
+  dom.modalSwatch.css("--modal-color", modalColour.hex);
+  dom.modalFamily.text(modalColour.sampleRole ? `${modalColour.family} · ${modalColour.sampleRole}` : modalColour.family);
+  dom.modalShadeName.text(modalColour.name);
+  dom.modalShadeCode.text(`Shade code ${modalColour.code}`);
+  dom.modalHex.text(modalColour.hex.toUpperCase());
+  dom.modalRgb.text(modalColour.rgbText);
+  dom.modalCode.text(modalColour.code);
+  updateModalShortlistState(modalColour);
+
+  buildSmartPalette(modalColour);
   renderSelectedPalette();
   dom.body.addClass("modal-open");
   dom.overlay.addClass("active").attr("aria-hidden", "false");
@@ -713,22 +870,61 @@ function openModal(shade) {
   if (modalNode) modalNode.scrollTop = 0;
   if (modalContentNode) modalContentNode.scrollTop = 0;
 
-  if (window.gsap) {
-    gsap.fromTo(".shade-modal", { y: 26, scale: .96, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: .36, ease: "power3.out" });
+  // On real phones, transform-based entrance animations can briefly flash while
+  // the browser promotes a large blurred modal layer. Keep the first paint stable
+  // on small/touch screens and animate only on larger screens.
+  if (prefersStableModal() || !window.gsap) {
+    if (modalNode) {
+      modalNode.style.opacity = "";
+      modalNode.style.transform = "";
+    }
+    return;
   }
+
+  gsap.killTweensOf(modalNode);
+  gsap.fromTo(modalNode, { y: 18, scale: .985, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: .24, ease: "power2.out" });
+}
+
+function normalizeModalColour(colour) {
+  const hex = normalizeHex(colour?.hex) || "#ffffff";
+  const rgb = colour?.rgb || hexToRgb(hex);
+  return {
+    ...colour,
+    hex,
+    rgb,
+    rgbText: colour?.rgbText || `${rgb.r}, ${rgb.g}, ${rgb.b}`,
+    family: cleanText(colour?.family) || "Colour",
+    name: cleanText(colour?.name) || "Selected colour",
+    code: cleanText(colour?.code) || "Custom",
+    sampleRole: cleanText(colour?.sampleRole) || "",
+    baseShadeId: colour?.baseShadeId || colour?.shadeId || colour?.id || null
+  };
+}
+
+function prefersStableModal() {
+  return window.matchMedia("(max-width: 820px), (pointer: coarse), (prefers-reduced-motion: reduce)").matches;
 }
 
 function closeModal() {
   if (!dom.overlay.hasClass("active")) return;
-  if (window.gsap) {
-    gsap.to(".shade-modal", { y: 18, scale: .98, opacity: 0, duration: .2, ease: "power2.in", onComplete: () => {
-      dom.overlay.removeClass("active").attr("aria-hidden", "true");
-      if (!dom.selectionOverlay.hasClass("active")) dom.body.removeClass("modal-open");
-    } });
-  } else {
+  const modalNode = dom.overlay.find(".shade-modal")[0];
+  const complete = () => {
     dom.overlay.removeClass("active").attr("aria-hidden", "true");
+    state.currentModalColor = null;
+    if (modalNode) {
+      modalNode.style.opacity = "";
+      modalNode.style.transform = "";
+    }
     if (!dom.selectionOverlay.hasClass("active")) dom.body.removeClass("modal-open");
+  };
+
+  if (prefersStableModal() || !window.gsap) {
+    complete();
+    return;
   }
+
+  gsap.killTweensOf(modalNode);
+  gsap.to(modalNode, { y: 14, scale: .99, opacity: 0, duration: .16, ease: "power2.in", onComplete: complete });
 }
 
 function openSelectionModal() {
@@ -758,7 +954,9 @@ function closeSelectionModal(options = {}) {
 
 function shortlistShade(shade, origin) {
   if (!shade) return;
-  savePaletteColor(shadeToPaletteItem(shade, { role: "Shortlisted shade", source: "Fan plus" }), {
+  const role = shade.sampleRole || "Shortlisted shade";
+  const source = shade.isSample ? "Details popup sample" : "Fan plus";
+  savePaletteColor(shadeToPaletteItem(shade, { role, source }), {
     origin,
     toast: (colour, added) => added ? `Shortlisted colour: ${colour.name}.` : `${colour.name} is already shortlisted and moved to the front.`
   });
@@ -766,7 +964,9 @@ function shortlistShade(shade, origin) {
 
 function isShadeShortlisted(shade) {
   if (!shade) return false;
-  return state.selectedPalette.some(item => item.shadeId === shade.id || item.hex === shade.hex);
+  const baseId = shade.baseShadeId || shade.shadeId || shade.id;
+  const exactKey = shade.key || paletteKey(shadeToPaletteItem(shade) || shade);
+  return state.selectedPalette.some(item => item.key === exactKey || item.hex === shade.hex || item.shadeId === baseId && !shade.isSample);
 }
 
 function updateModalShortlistState(shade) {
@@ -776,6 +976,7 @@ function updateModalShortlistState(shade) {
     .html(`<i class="${shortlisted ? "ri-check-line" : "ri-add-line"}" aria-hidden="true"></i> ${shortlisted ? "Shortlisted" : "Shortlist shade"}`);
 }
 
+// Smart palette derives companion colours from the selected API shade.
 function buildSmartPalette(shade) {
   if (!shade) {
     state.currentSmartPalette = [];
@@ -871,14 +1072,17 @@ function persistSelectedPalette() {
 }
 
 function shadeToPaletteItem(shade, overrides = {}) {
+  if (!shade) return null;
   const hex = normalizeHex(overrides.hex || shade.hex) || shade.hex;
   return normalizePaletteItem({
-    shadeId: shade.id,
+    // For generated fan-strip samples, keep the API shade id so the selection
+    // popup can still jump back to the original fandeck card.
+    shadeId: overrides.shadeId || shade.baseShadeId || shade.shadeId || shade.id,
     name: overrides.name || shade.name,
     code: overrides.code || shade.code,
-    family: shade.family,
-    role: overrides.role || "Shade",
-    source: overrides.source || "Fandeck",
+    family: overrides.family || shade.family,
+    role: overrides.role || shade.sampleRole || "Shade",
+    source: overrides.source || shade.source || "Fandeck",
     hex,
     featured: Boolean(overrides.featured),
     wide: Boolean(overrides.wide)
@@ -891,6 +1095,34 @@ function paletteItemFromElement(shade, element) {
   const role = cleanText(target.data("role")) || "Sample";
   const name = cleanText(target.data("label")) || `${shade.name} ${role}`;
   return shadeToPaletteItem(shade, { hex, role, name, source: "Fan strip" });
+}
+
+// Builds a modal-ready colour object for the exact fan cap/strip clicked.
+// The API gives one main shade colour per card; each cap/strip is a generated
+// physical fandeck-style sample. This helper makes those samples first-class
+// enough for the details popup, copy chips, smart palette, and shortlist button.
+function shadeSampleFromElement(shade, element) {
+  const sample = paletteItemFromElement(shade, element);
+  if (!sample) return shade;
+  const rgb = hexToRgb(sample.hex);
+  return {
+    ...shade,
+    id: `${shade.id}--${slugify(sample.role)}--${sample.hex.replace("#", "")}`,
+    baseShadeId: shade.id,
+    shadeId: shade.id,
+    name: sample.name,
+    code: sample.code,
+    family: sample.family,
+    sampleRole: sample.role,
+    source: sample.source,
+    hex: sample.hex,
+    rgb,
+    rgbText: `${rgb.r}, ${rgb.g}, ${rgb.b}`,
+    hsl: rgbToHsl(rgb.r, rgb.g, rgb.b),
+    isSample: true,
+    key: sample.key,
+    search: `${sample.name} ${sample.code} ${sample.family} ${sample.role}`.toLowerCase()
+  };
 }
 
 function normalizePaletteItem(item) {
@@ -921,6 +1153,10 @@ function hasPaletteColor(keyOrHex) {
   return state.selectedPalette.some(item => normalizedHex ? item.hex === normalizedHex : item.key === keyOrHex);
 }
 
+function getModalPaletteBase() {
+  return dom.overlay?.hasClass("active") && state.currentModalColor ? state.currentModalColor : getSelectedShade();
+}
+
 function savePaletteColor(item, options = {}) {
   const normalized = normalizePaletteItem(item);
   if (!normalized) return;
@@ -938,7 +1174,7 @@ function savePaletteColor(item, options = {}) {
 
   persistSelectedPalette();
   renderSelectedPalette();
-  buildSmartPalette(getSelectedShade());
+  buildSmartPalette(getModalPaletteBase());
 
   if (!options.silent) {
     const customToast = typeof options.toast === "function" ? options.toast(normalized, added) : options.toast;
@@ -948,7 +1184,7 @@ function savePaletteColor(item, options = {}) {
   animateSaved(options.origin);
   const savedTile = dom.smartPalette.find(`[data-key="${cssEscape(normalized.key)}"]`);
   if (savedTile.length) animateSaved(savedTile[0]);
-  updateModalShortlistState(getSelectedShade());
+  updateModalShortlistState(getModalPaletteBase());
   setTimeout(() => renderDeck({ animate: false }), 180);
   if (options.open) openModal(getSelectedShade());
 }
@@ -959,9 +1195,9 @@ function removePaletteColor(key) {
   if (state.selectedPalette.length === before) return;
   persistSelectedPalette();
   renderSelectedPalette();
-  buildSmartPalette(getSelectedShade());
+  buildSmartPalette(getModalPaletteBase());
   renderDeck({ animate: false });
-  updateModalShortlistState(getSelectedShade());
+  updateModalShortlistState(getModalPaletteBase());
   showToast("Colour removed from selection.");
 }
 
@@ -970,10 +1206,25 @@ function clearSelectedPalette() {
   state.selectedPalette = [];
   persistSelectedPalette();
   renderSelectedPalette();
-  buildSmartPalette(getSelectedShade());
+  buildSmartPalette(getModalPaletteBase());
   renderDeck({ animate: false });
-  updateModalShortlistState(getSelectedShade());
+  updateModalShortlistState(getModalPaletteBase());
   showToast("Colour selection cleared.");
+}
+
+// Renders the shortlisted colours in both the small tray and the header CTA modal.
+function getShortlistedShadeIds() {
+  return new Set(state.selectedPalette.map(item => item.shadeId).filter(Boolean));
+}
+
+function updateShortlistToggle() {
+  if (!dom.toggleFavorites?.length) return;
+  const count = getShortlistedShadeIds().size;
+  const label = state.favoritesOnly ? "Showing shortlisted" : "Shortlisted";
+  dom.toggleFavorites
+    .toggleClass("active", state.favoritesOnly)
+    .attr("aria-label", state.favoritesOnly ? "Show all shades" : "Show only shortlisted shades")
+    .html(`<i class="${state.favoritesOnly ? "ri-bookmark-3-fill" : "ri-bookmark-3-line"}" aria-hidden="true"></i> ${label}${count ? ` <span class="pill-count">${count}</span>` : ""}`);
 }
 
 function renderSelectedPalette() {
@@ -982,7 +1233,7 @@ function renderSelectedPalette() {
   if (dom.selectionCount?.length) dom.selectionCount.text(countText);
   if (dom.clearSelection?.length) dom.clearSelection.prop("disabled", count === 0);
   if (dom.paletteHint?.length) {
-    dom.paletteHint.text(count ? `${countText} shortlisted. Tap the blue header CTA to review.` : "Tap the + on a fan card or a smart palette tile to shortlist colours.");
+    dom.paletteHint.text(count ? `${countText} shortlisted. Tap the blue header CTA to review.` : "Tap the + on a fan card, Save shade, or a smart palette tile to shortlist colours.");
   }
   if (dom.selectionBadge?.length) {
     dom.selectionBadge.text(count).toggleClass("hidden", count === 0).addClass("bump");
@@ -995,7 +1246,7 @@ function renderSelectedPalette() {
 
   if (dom.selectionBento?.length) {
     if (!count) {
-      dom.selectionBento.html(`<div class="empty-selection">No colours selected yet. Tap the + on a fandeck card or a smart palette tile.</div>`);
+      dom.selectionBento.html(`<div class="empty-selection">No colours shortlisted yet. Tap the + on a fandeck card or a smart palette tile.</div>`);
     } else {
       dom.selectionBento.html(state.selectedPalette.map((item, index) => selectionCardMarkup(item, index)).join(""));
     }
@@ -1003,17 +1254,19 @@ function renderSelectedPalette() {
 
   if (dom.favoriteTray?.length) {
     if (!count) {
-      dom.favoriteTray.html(`<span class="empty-tray">No colours selected yet</span>`);
+      dom.favoriteTray.html(`<span class="empty-tray">No colours shortlisted yet</span>`);
     } else {
-      dom.favoriteTray.html(state.selectedPalette.slice(0, 6).map(item => `
+      const minis = state.selectedPalette.slice(0, 4).map(item => `
         <button class="selection-mini" type="button" data-shade-id="${escapeAttr(item.shadeId || "")}" title="${escapeAttr(`${item.name} ${item.hex.toUpperCase()}`)}">
           <span class="selection-mini-swatch" style="background:${item.hex}"></span>
           <span class="selection-mini-text"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.hex.toUpperCase())}</small></span>
           <i class="ri-arrow-right-up-line" aria-hidden="true"></i>
         </button>
-      `).join(""));
+      `).join("");
+      dom.favoriteTray.html(`${minis}<button class="review-selection" type="button"><i class="ri-check-double-line" aria-hidden="true"></i> Review ${count}</button>`);
     }
   }
+  updateShortlistToggle();
 }
 
 function selectionCardMarkup(item, index) {
@@ -1087,6 +1340,7 @@ function setupGsapIntro() {
   gsap.from(".hero-copy > *, .control-row, .deck-section", { y: 22, opacity: 0, duration: .7, ease: "power3.out", stagger: .08, delay: .08 });
 }
 
+// Desktop uses GSAP Draggable; mobile uses the native swipe fallback below.
 function setupDraggable() {
   if (state.dragProxy) {
     state.dragProxy.kill();
@@ -1140,6 +1394,7 @@ function setupDraggable() {
   })[0];
 }
 
+// Mobile swipe: horizontal movement browses shades; vertical movement scrolls the page.
 function setupNativeSwipeBrowsing() {
   const stage = dom.fanStage[0];
   let active = false;
@@ -1175,9 +1430,18 @@ function setupNativeSwipeBrowsing() {
 
     if (!horizontal) return;
     if (event && event.preventDefault) event.preventDefault();
-    const stepSize = window.matchMedia("(max-width: 520px)").matches ? 24 : 30;
+    const stepSize = window.matchMedia("(max-width: 520px)").matches ? 28 : 34;
     const next = startIndex - Math.round(dx / stepSize);
-    setSelectedIndex(next, { source: "touch-swipe" });
+
+    // requestAnimationFrame prevents repeated DOM work during fast touchmove
+    // bursts, which is the main cause of mobile card blinking.
+    state.swipePendingIndex = next;
+    if (!state.swipeFrame) {
+      state.swipeFrame = requestAnimationFrame(() => {
+        setSelectedIndex(state.swipePendingIndex, { source: "touch-swipe" });
+        state.swipeFrame = null;
+      });
+    }
   }
 
   function endSwipe() {
@@ -1190,6 +1454,12 @@ function setupNativeSwipeBrowsing() {
     if (pointerId !== null && pointerId !== undefined && stage.releasePointerCapture) {
       try { stage.releasePointerCapture(pointerId); } catch (_) {}
     }
+    if (state.swipeFrame) {
+      cancelAnimationFrame(state.swipeFrame);
+      state.swipeFrame = null;
+      setSelectedIndex(state.swipePendingIndex, { source: "touch-swipe" });
+    }
+    state.swipePendingIndex = null;
     pointerId = null;
   }
 
@@ -1236,10 +1506,40 @@ function pulseDeck() {
 
 function setLoading(isLoading) {
   if (!isLoading) return;
-  dom.progressText.text("Loading live colour catalogue...");
+  dom.progressText.text("Loading local Asian Paints colour catalogue...");
   dom.beaconName.text("Loading shades");
-  dom.beaconMeta.text("Connecting to shade listing");
+  dom.beaconMeta.text("Reading apcatalogue.json");
 }
+
+function showDataError(message) {
+  state.all = [];
+  state.filtered = [];
+  state.selectedId = null;
+  dom.tabs.html(`<button class="tab active" type="button">Catalogue unavailable</button>`);
+  dom.range.attr({ min: 0, max: 0 }).val(0);
+  dom.rangeCount.text("0 / 0");
+  dom.progressText.text("Catalogue data unavailable");
+  dom.shadeTotal.text("0 shades");
+  dom.progressFill.css("width", "0%");
+  dom.progressKnob.css("left", "0%");
+  dom.beaconName.text("No catalogue shades loaded");
+  dom.beaconMeta.text("Check apcatalogue.json");
+  dom.activeFamily.text("Catalogue");
+  dom.activeName.text("No colours found");
+  dom.activeCode.text("The fandeck needs catalogue shade data with HEX/RGB values.");
+  dom.activeHex.text("--");
+  dom.activeRgb.text("--");
+  dom.fanDeck.html(`
+    <div class="empty-tray api-empty">
+      <strong>Catalogue data needed</strong>
+      <span>${escapeHtml(message)}</span>
+    </div>
+  `);
+  renderSelectedPalette();
+  setLoading(false);
+  showToast("Catalogue unavailable. Check apcatalogue.json and your static server.");
+}
+
 
 function getSelectedShade() {
   return state.filtered[state.selectedIndex] || null;
@@ -1294,17 +1594,28 @@ function normalizeFamily(family) {
   const text = cleanText(family) || "Other";
   const known = {
     grey: "Grey",
+    greys: "Grey",
     gray: "Grey",
+    grays: "Grey",
     blue: "Blue",
+    blues: "Blue",
     brown: "Brown",
+    browns: "Brown",
     red: "Pink And Red",
+    reds: "Pink And Red",
     pink: "Pink And Red",
+    pinks: "Pink And Red",
     "pink and red": "Pink And Red",
     orange: "Orange",
+    oranges: "Orange",
     yellow: "Yellow",
+    yellows: "Yellow",
     green: "Green",
+    greens: "Green",
     teal: "Teal",
+    teals: "Teal",
     purple: "Purple",
+    purples: "Purple",
     white: "Whites",
     whites: "Whites",
     "off white": "Off Whites",
@@ -1333,7 +1644,7 @@ function autoFamily(hex) {
 
 function isLikelyFamilyName(key) {
   const normalized = key.toLowerCase();
-  return ["grey", "gray", "blue", "brown", "red", "pink", "pink and red", "orange", "yellow", "green", "teal", "purple", "whites", "white", "off whites", "off white", "neutral", "neutrals"].includes(normalized);
+  return ["grey", "greys", "gray", "grays", "blue", "blues", "brown", "browns", "red", "reds", "pink", "pinks", "pink and red", "orange", "oranges", "yellow", "yellows", "green", "greens", "teal", "teals", "purple", "purples", "whites", "white", "off whites", "off white", "neutral", "neutrals"].includes(normalized);
 }
 
 function prettifyKey(key) {
@@ -1467,7 +1778,7 @@ function readableText(hex) {
 
 function familyAccent(family = "All") {
   const lower = String(family).toLowerCase();
-  if (lower.includes("all")) return "#2563eb";
+  if (lower.includes("all")) return "#ed1c24";
   if (lower.includes("blue")) return "#1d6fb8";
   if (lower.includes("brown")) return "#8b5a3c";
   if (lower.includes("grey") || lower.includes("gray")) return "#64748b";
@@ -1479,7 +1790,7 @@ function familyAccent(family = "All") {
   if (lower.includes("yellow")) return "#ca8a04";
   if (lower.includes("white")) return "#94a3b8";
   if (lower.includes("neutral")) return "#a16207";
-  return "#075da7";
+  return "#ed1c24";
 }
 
 function hexToRgba(hex, alpha = 1) {
