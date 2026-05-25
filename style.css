@@ -472,7 +472,7 @@ button {
   gap: 8px;
   min-height: 44px;
   padding: 10px 15px;
-  border-radius: 999px;
+  border-radius: 12px;
   color: var(--brand-dark);
   background: rgba(255, 255, 255, 0.74);
   box-shadow: var(--shadow-soft);
@@ -706,7 +706,7 @@ button {
   align-items: center;
   gap: 12px;
   padding: 11px 14px;
-  border-radius: 999px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.84);
   color: var(--ink);
   text-align: left;
@@ -756,10 +756,10 @@ button {
 }
 
 .insight-card {
-  align-self: center;
+  align-self: start;
   min-height: 500px;
   padding: 18px;
-  border-radius: 34px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.74);
   box-shadow: var(--shadow-soft);
@@ -792,6 +792,7 @@ button {
   content: "";
   position: absolute;
   inset: 0;
+  border-radius: 12px;
   background: linear-gradient(115deg, rgba(255, 255, 255, 0.28), transparent 48%), radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.38), transparent 24%);
 }
 
@@ -866,7 +867,7 @@ button {
 
 .value-grid div {
   padding: 12px;
-  border-radius: 20px;
+  border-radius: 12px;
   background: rgba(7, 93, 167, 0.07);
 }
 
@@ -976,7 +977,7 @@ button {
   margin: 22px auto 0;
   padding: 14px 18px;
   width: min(1020px, 100%);
-  border-radius: 24px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.58);
   border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow: var(--shadow-soft);
@@ -3938,6 +3939,7 @@ body.modal-open {
 
 .fan-stage {
   min-height: clamp(560px, 61vw, 760px) !important;
+  border-radius: 12px;
 }
 
 .fan-deck {
@@ -3960,7 +3962,7 @@ body.modal-open {
 }
 
 .progress-wrap {
-  border-radius: 24px !important;
+  border-radius: 12px !important;
   border: 1px solid rgba(7, 93, 167, 0.12) !important;
   background: rgba(255, 255, 255, 0.92) !important;
 }
