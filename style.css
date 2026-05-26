@@ -3818,7 +3818,6 @@ body {
     justify-content: flex-start;
   }
   .review-selection {
-    width: 100%;
     justify-content: center;
   }
   .smart-palette {
@@ -4317,55 +4316,104 @@ body.modal-open {
     box-shadow: var(--shadow-soft);
 }
 
-
  .range-speadometer-model {
-    width: 260px;
-    margin: 20px auto;
-    font-family: sans-serif;
+    border: 0.5px solid var(--border);
+    width: 100%;
+    max-width: 300px;
     position: absolute;
-    bottom: -40px;
-    left: 310px;
-}
-  .range-speadometer-model .card-label {
-    text-align: center;
-    font-weight: 600;
-    margin-bottom: 6px;
-    position: absolute;
-    bottom: 25px;
-    left: 96px;
-    font-size: 14px;
-}
-  .range-speadometer-model .speed-val {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 500;
-    margin-bottom: .25rem;
+    bottom: -64px;
+    left: 333px;
   }
-  .range-speadometer-model .speed-unit {
-    font-size: 13px;
-    font-weight: 400;
-    color: #888;
-  }
-  .range-speadometer-model .speed-arc {
+
+  /* ── Arc ── */
+ .range-speadometer-model .arc-wrap {
     position: relative;
-    height: 90px;
-    overflow: hidden;
+    width: 100%;
+    user-select: none;
+    touch-action: none;
     margin-bottom: .5rem;
   }
-  .range-speadometer-model .speed-arc svg {
+  .range-speadometer-model .arc-wrap svg {
     width: 100%;
-    height: 180px;
+    overflow: visible;
   }
-  .range-speadometer-model #rangeSlider {
+
+  /* ── Center value ── */
+  .range-speadometer-model .center-val {
     position: absolute;
-    inset: 0;
-    opacity: 0; /* hide native slider but keep it functional */
-    cursor: pointer;
+    left: 50%;
+    bottom: 74px;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
   }
-  .range-speadometer-model .speed-foot {
+   .range-speadometer-model .cv-big {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+  }
+   .range-speadometer-model .cv-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── Edge labels ── */
+   .range-speadometer-model .edge-labels {
     display: flex;
     justify-content: space-between;
     font-size: 11px;
-    color: #888;
-    margin-top: 4px;
+    color: var(--muted);
+    padding: 0 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Section card ── */
+   .range-speadometer-model .section-card {
+    background: var(--bg2);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    border: 0.5px solid var(--border);
+    transition: border-color .3s;
+  }
+   .range-speadometer-model .sec-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: .75rem;
+  }
+   .range-speadometer-model .sec-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: background .3s;
+  }
+   .range-speadometer-model .sec-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+   .range-speadometer-model .sec-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .range-speadometer-model  .sec-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: .9rem;
+  }
+   .range-speadometer-model .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: background .3s, color .3s;
   }

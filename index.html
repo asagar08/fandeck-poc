@@ -111,25 +111,67 @@
           <i class="ri-arrow-right-up-line" aria-hidden="true"></i>
         </button>
 
+
+
+        <!-- <div class="card range-speadometer-model hidden-sm">
+  
+  <div class="speed-arc">
+    <svg viewBox="0 0 467 269" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20,240 A230,230 0 0,1 480,240"
+            fill="none" stroke="#EEEDFE" stroke-width="18" stroke-linecap="round"/>
+      <path id="arc-fill" d="M20,240 A230,230 0 0,1 480,240"
+            fill="none" stroke="#075da7" stroke-width="18" stroke-linecap="round"
+            stroke-dasharray="345" stroke-dashoffset="172"/>
+      <circle id="arc-thumb" cx="130" cy="44" r="18" fill="#534AB7"
+              style="filter:drop-shadow(0 0 6px rgba(83,74,183,.6))"/>
+    </svg>
+    <input type="range" id="rangeSlider" min="0" max="100" value="50" step="1" aria-label="Speed">
+    <span id="rangeCount" class="card-label" >1794 / 2200</span>
+  
+  </div>
+</div> -->
         <div class="card range-speadometer-model hidden-sm">
+          <input type="range" id="rangeSlider" min="0" max="100" value="50" step="1" aria-label="Speed"
+            style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;">
+          <!-- Arc SVG -->
+          <div class="arc-wrap" id="arcWrap">
+            <svg id="arcSvg" viewBox="0 0 300 155">
+              <defs>
+                <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#E24B4A" />
+                  <stop offset="25%" stop-color="#EF9F27" />
+                  <stop offset="60%" stop-color="#1D9E75" />
+                  <stop offset="100%" stop-color="#5B4CF5" />
+                </linearGradient>
+              </defs>
 
-          <div class="speed-arc">
-            <svg viewBox="0 0 467 269" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20,240 A230,230 0 0,1 480,240" fill="none" stroke="#EEEDFE" stroke-width="18"
-                stroke-linecap="round" />
-              <path id="arc-fill" d="M20,240 A230,230 0 0,1 480,240" fill="none" stroke="#075da7" stroke-width="18"
-                stroke-linecap="round" stroke-dasharray="345" stroke-dashoffset="172" />
-              <circle id="arc-thumb" cx="130" cy="44" r="18" fill="#534AB7"
-                style="filter:drop-shadow(0 0 6px rgba(83,74,183,.6))" />
+              <!-- background track -->
+              <path id="bgArc" fill="none" stroke-width="10" stroke-linecap="round" stroke="#e0ddd6" />
+
+              <!-- filled progress -->
+              <path id="fillArc" fill="none" stroke-width="10" stroke-linecap="round" stroke="url(#arcGrad)"
+                stroke-dasharray="1000" stroke-dashoffset="1000" style="transition: stroke-dashoffset .05s ease" />
+
+              <!-- thumb outer ring -->
+              <circle id="thumb" r="14" fill="var(--bg)" stroke="#5B4CF5" stroke-width="3" cx="150" cy="150" style="cursor: grab; transition: stroke .25s, filter .2s;
+               filter: drop-shadow(0 2px 6px rgba(91,76,245,.25))" />
+
+              <!-- thumb inner dot -->
+              <circle id="dot" r="5" fill="#5B4CF5" cx="150" cy="150"
+                style="pointer-events: none; transition: fill .25s" />
             </svg>
-            <input type="range" id="rangeSlider" min="0" max="100" value="50" step="1" aria-label="Speed">
-            <span id="rangeCount" class="card-label">1794 / 2200</span>
 
-          </div>
+            <!-- live number -->
+            <div class="center-val">
+              <span class="cv-big" id="cvNum">0</span> / <span style="font-size:20px;">2200</span>
+            </div>
+          </div>2200
+
+
+
         </div>
 
       </div>
-
       <aside class="insight-card" aria-label="Selected colour summary">
         <div class="insight-head">
           <span id="activeFamily">Family</span>

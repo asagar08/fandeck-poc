@@ -111,7 +111,7 @@ function cacheDom() {
   dom.activeRgb = $("#activeRgb");
   dom.previewWall = $("#previewWall");
   dom.favoriteCurrent = $("#favoriteCurrent");
-  dom.favoriteTray = $("#favoriteTray");
+  dom.favoriteTray =  $("#favoriteTray, #favoriteTrayMob");
   dom.toggleFavorites = $("#toggleFavorites");
   dom.openDetails = $("#openDetails");
   dom.randomShade = $("#randomShade");
@@ -1852,76 +1852,135 @@ function cssEscape(value) {
   return String(value).replace(/"/g, "\\\"");
 }
 
-function sliderrange(){
-          const sliders = document.getElementById('rangeSlider')[1];
-          const arcFill = document.getElementById('arc-fill');
-          const arcThumb = document.getElementById('arc-thumb');
-          const spVal = document.getElementById('sp-val');
-          const svg = document.querySelector('.speed-arc svg');
+(function () {
+  'use strict';
 
-          const arcLength = arcFill.getTotalLength();
-          arcFill.setAttribute('stroke-dasharray', arcLength);
+  function initArcSlider() {
+    const slider = document.getElementById('rangeSlider');
+    if (!slider) return;
 
-          function updateArc() {
-            const v = +rangeSlider.value;
-            arcFill.setAttribute('stroke-dashoffset', arcLength - (v / 100 * arcLength));
-            const angle = Math.PI * (v / 100);
-            const cx = 130 - 110 * Math.cos(angle);
-            const cy = 130 - 110 * Math.sin(angle);
-            arcThumb.setAttribute('cx', cx);
-            arcThumb.setAttribute('cy', cy);
-            spVal.innerHTML = v + ' <span class="speed-unit">km/h</span>';
-          }
-          rangeSlider.addEventListener('input', updateArc);
+    const MIN  = parseFloat(slider.min)  || 0;
+    const MAX  = parseFloat(slider.max)  || 100;
+    const STEP = parseFloat(slider.step) || 1;
 
-          function updateArc() {
-            const v = +rangeSlider.value;
+    const SECTIONS = [
+      { min: 0,  max: 24,  color: '#E24B4A', bg: '#FCEAEA', icon: 'ti ti-seedling', title: 'Getting started',     desc: "You're at the very beginning. Explore the basics and take your first steps.",  tags: ['Intro', 'Basics', 'Setup']        },
+      { min: 25, max: 49,  color: '#EF9F27', bg: '#FDF3E3', icon: 'ti ti-flame',    title: 'Building momentum',   desc: "You've got the hang of it. Build key skills and a consistent daily habit.",    tags: ['Practice', 'Habits', 'Skills']    },
+      { min: 50, max: 74,  color: '#1D9E75', bg: '#E6F6F1', icon: 'ti ti-bolt',     title: 'Hitting your stride', desc: "Great progress! Applying what you've learned to real challenges.",             tags: ['Projects', 'Challenges', 'Speed'] },
+      { min: 75, max: 100, color: '#5B4CF5', bg: '#ECEAFD', icon: 'ti ti-crown',    title: 'Mastery zone',        desc: "Outstanding! Deep dives, mentorship, and certification are within reach.",    tags: ['Advanced', 'Mastery', 'Certify']  }
+    ];
 
-            arcFill.setAttribute('stroke-dashoffset', arcLength - (v / 100 * arcLength));
+    const CX = 150, CY = 152, R = 124;
+    const START_DEG = 210, END_DEG = 330;
+    const SPAN    = ((END_DEG - START_DEG) + 360) % 360;
+    const ARC_LEN = (SPAN / 360) * 2 * Math.PI * R;
 
-            const angle = Math.PI * (v / 100);
+    function deg2rad(d) { return d * Math.PI / 180; }
 
-            const centerX = 130, centerY = 130, radius = 110;
+    function ptOnArc(deg) {
+      return {
+        x: CX + R * Math.cos(deg2rad(deg)),
+        y: CY + R * Math.sin(deg2rad(deg))
+      };
+    }
 
-            const cx = centerX - radius * Math.cos(angle);
-            const cy = centerY - radius * Math.sin(angle);
+    function arcPathD(a1, a2) {
+      const s = ptOnArc(a1), e = ptOnArc(a2);
+      const sp = ((a2 - a1) + 360) % 360;
+      return `M${s.x} ${s.y} A${R} ${R} 0 ${sp > 180 ? 1 : 0} 1 ${e.x} ${e.y}`;
+    }
 
-            arcThumb.setAttribute('cx', cx);
-            arcThumb.setAttribute('cy', cy);
+    const bgArc   = document.getElementById('bgArc');
+    const fillArc = document.getElementById('fillArc');
+    const thumbEl = document.getElementById('thumb');
+    const dotEl   = document.getElementById('dot');
+    const svgEl   = document.getElementById('arcSvg');
+    if (!bgArc || !fillArc || !thumbEl || !dotEl || !svgEl) return;
 
-            spVal.innerHTML = v + ' <span class="speed-unit">km/h</span>';
-          }
+    bgArc.setAttribute('d', arcPathD(START_DEG, END_DEG));
+    fillArc.setAttribute('d', arcPathD(START_DEG, END_DEG));
+    fillArc.setAttribute('stroke-dasharray', ARC_LEN);
+    fillArc.setAttribute('stroke-dashoffset', ARC_LEN);
 
-          rangeSlider.addEventListener('input', updateArc);
-          updateArc();
+    function getSection(v) {
+      const pct = ((v - MIN) / (MAX - MIN)) * 100;
+      return SECTIONS.find(s => pct >= s.min && pct <= s.max) || SECTIONS[0];
+    }
 
-          // optional: make arc itself draggable
-          function startDrag(e) {
-            e.preventDefault();
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchmove', drag);
-            document.addEventListener('touchend', stopDrag);
-          }
-          function drag(e) {
-            const rect = svg.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-            const dx = 130 - x, dy = 130 - y;
-            let angle = Math.atan2(dy, dx);
-            if (angle < 0) angle = 0;
-            if (angle > Math.PI) angle = Math.PI;
-            const value = Math.round((angle / Math.PI) * 100);
-            rangeSlider.value = value;
-            updateArc();
-          }
-          function stopDrag() {
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('mouseup', stopDrag);
-            document.removeEventListener('touchmove', drag);
-            document.removeEventListener('touchend', stopDrag);
-          }
-          svg.addEventListener('mousedown', startDrag);
-          svg.addEventListener('touchstart', startDrag);
-}
-sliderrange();
+    function update(t) {
+      const v   = MIN + t * (MAX - MIN);
+      const sec = getSection(v);
+
+      fillArc.setAttribute('stroke-dashoffset', ARC_LEN - t * ARC_LEN);
+
+      const pt = ptOnArc(START_DEG + t * SPAN);
+      thumbEl.setAttribute('cx', pt.x); thumbEl.setAttribute('cy', pt.y);
+      dotEl.setAttribute('cx',   pt.x); dotEl.setAttribute('cy',   pt.y);
+      thumbEl.setAttribute('stroke', sec.color);
+      thumbEl.style.filter = `drop-shadow(0 2px 8px ${sec.color}55)`;
+      dotEl.setAttribute('fill', sec.color);
+
+      const cvNum = document.getElementById('cvNum');
+      if (cvNum) cvNum.textContent = Math.round(v);
+
+      const secCard  = document.getElementById('secCard');
+      const secIcon  = document.getElementById('secIcon');
+      const secIco   = document.getElementById('secIco');
+      const secTitle = document.getElementById('secTitle');
+      const secDesc  = document.getElementById('secDesc');
+      const secTags  = document.getElementById('secTags');
+
+      if (secCard)  secCard.style.borderColor = sec.color;
+      if (secIcon)  secIcon.style.background  = sec.bg;
+      if (secIco) { secIco.style.color        = sec.color;
+                    secIco.className          = 'ti ' + sec.icon.replace('ti ', ''); }
+      if (secTitle) secTitle.textContent      = sec.title;
+      if (secDesc)  secDesc.textContent       = sec.desc;
+      if (secTags)  secTags.innerHTML         = sec.tags
+        .map(tag => `<span class="tag" style="background:${sec.bg};color:${sec.color}">${tag}</span>`)
+        .join('');
+    }
+
+    function setVal(v) {
+      v = Math.max(MIN, Math.min(MAX, Math.round(v / STEP) * STEP));
+      slider.value = v;
+      slider.dispatchEvent(new Event('input',  { bubbles: true }));
+      slider.dispatchEvent(new Event('change', { bubbles: true }));
+      update((v - MIN) / (MAX - MIN));
+    }
+
+    slider.addEventListener('input',  () => update((parseFloat(slider.value) - MIN) / (MAX - MIN)));
+    slider.addEventListener('change', () => update((parseFloat(slider.value) - MIN) / (MAX - MIN)));
+
+    let dragging = false;
+
+    function pointerToT(e) {
+      const rect = svgEl.getBoundingClientRect();
+      const px   = ((e.touches ? e.touches[0].clientX : e.clientX) - rect.left) * (300 / rect.width);
+      const py   = ((e.touches ? e.touches[0].clientY : e.clientY) - rect.top)  * (155 / rect.height);
+      let angle  = Math.atan2(py - CY, px - CX) * 180 / Math.PI;
+      if (angle < 0) angle += 360;
+      let t = ((angle - START_DEG) + 360) % 360 / SPAN;
+      if (t > 0.95) t = 1;
+      if (t < 0.05) t = 0;
+      return Math.max(0, Math.min(1, t));
+    }
+
+    thumbEl.addEventListener('mousedown',  e => { dragging = true; e.preventDefault(); });
+    thumbEl.addEventListener('touchstart', e => { dragging = true; e.preventDefault(); }, { passive: false });
+    document.addEventListener('mousemove', e => { if (dragging) setVal(MIN + pointerToT(e) * (MAX - MIN)); });
+    document.addEventListener('touchmove', e => { if (dragging) setVal(MIN + pointerToT(e) * (MAX - MIN)); }, { passive: false });
+    document.addEventListener('mouseup',  () => dragging = false);
+    document.addEventListener('touchend', () => dragging = false);
+    svgEl.addEventListener('click', e => setVal(MIN + pointerToT(e) * (MAX - MIN)));
+
+    update((parseFloat(slider.value) - MIN) / (MAX - MIN));
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initArcSlider);
+  } else {
+    initArcSlider();
+  }
+
+})();
