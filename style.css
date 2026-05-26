@@ -470,7 +470,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 60px;
   padding: 10px 15px;
   border-radius: 12px;
   color: var(--brand-dark);
@@ -502,14 +502,15 @@ button {
 }
 
 .vertical-control {
+  position: relative;
   align-self: center;
   justify-self: center;
-  width: 72px;
+  width: 25px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 40px 14px;
+  padding: 10px 14px;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-soft);
   border-radius: 999px;
@@ -1390,6 +1391,7 @@ button {
     min-width: calc(100% - 24px);
     grid-template-columns: 42px 1fr 30px;
     padding: 9px 12px;
+    position: relative;
   }
   .beacon-swatch {
     width: 42px;
@@ -3810,6 +3812,7 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 12px;
+    margin: 0;
   }
   .favorite-tray {
     width: 100%;
@@ -4219,7 +4222,6 @@ body.modal-open {
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-soft);
   border-radius: 999px;
-  padding: 40px 14px; 
 }
 #rangeSlider {
   appearance: slider-vertical;
@@ -4234,3 +4236,45 @@ body.modal-open {
 }
 
 /*# sourceMappingURL=style.css.map */
+
+
+.vertical-control-upd input{
+	-webkit-appearance:none;
+	width:400px;
+	height:4px;
+	border-radius:5px;
+	background-color:#ba3950;
+	outline:none;
+}
+.vertical-control-upd input::-webkit-slider-thumb{
+	-webkit-appearance:none;
+	width:20px;
+	height:20px;
+	border-radius:50%;
+	background-color:#a83348;
+}
+.vertical-control-upd span {
+    position: absolute;
+    margin-left: 14px;
+    width: 80px;
+    max-height: 50px;
+    background-color: #222;
+    color: #fff;
+    border-radius: 3px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 12px;
+    bottom: -60px;
+    left: -29px;
+}
+.vertical-control-upd span:before{
+	content:'';
+	position:absolute;
+	border-top:9px solid transparent;
+	border-bottom:9px solid transparent;
+	border-left:12px solid #222;
+	left: 25px;
+    top: -4px;
+	transform:translateY(-50%) rotate(-90deg);
+}
+
