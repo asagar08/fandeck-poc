@@ -738,7 +738,6 @@ function fanCardMarkup(shade, slot, context) {
       <div class="card-strip" data-hex="${escapeAttr(tintB)}" data-role="Wall tone" data-label="${escapeAttr(`${shade.name} Wall Tone`)}" style="background:${tintB}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 1))}</span><span class="strip-add" aria-hidden="true">+</span></div>
       <div class="card-strip" data-hex="${escapeAttr(tintC)}" data-role="Primary" data-label="${escapeAttr(shade.name)}" style="background:${tintC}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 2))}</span><span class="strip-add" aria-hidden="true">+</span></div>
       <div class="card-strip" data-hex="${escapeAttr(tintD)}" data-role="Deep accent" data-label="${escapeAttr(`${shade.name} Deep Accent`)}" style="background:${tintD}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 3))}</span><span class="strip-add" aria-hidden="true">+</span></div>
-      <span class="card-name">${escapeHtml(shade.name)}</span>
     </button>`;
 }
 

@@ -498,17 +498,21 @@ button {
   align-items: stretch;
   min-height: clamp(520px, 62vw, 760px);
   margin-top: 10px;
+  grid-template-rows: 1fr auto;
 }
 
 .vertical-control {
   align-self: center;
   justify-self: center;
   width: 72px;
-  min-height: min(500px, 58vh);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  padding: 40px 14px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+  border-radius: 999px;
 }
 
 .vertical-control span {
@@ -533,9 +537,9 @@ button {
   height: min(440px, 51vh);
   padding: 14px 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: var(--shadow-soft);
-  accent-color: var(--brand);
+   accent-color: var(--brand);
+  background: transparent; 
+  box-shadow: none;
 }
 
 .fan-stage {
@@ -694,31 +698,31 @@ button {
 }
 
 .selected-beacon {
-  position: absolute;
-  left: 50%;
-  bottom: 25px;
-  transform: translateX(-50%);
-  z-index: 6;
-  min-width: min(510px, 100% - 32px);
-  max-width: calc(100% - 32px);
-  display: grid;
-  grid-template-columns: 48px 1fr 38px;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 14px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.84);
-  color: var(--ink);
-  text-align: left;
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
-  backdrop-filter: blur(16px);
-  transition: transform 0.22s var(--ease), background 0.22s var(--ease);
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    z-index: 6;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 48px 1fr 38px;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 12px 12px 0 0;
+    background: rgba(255, 255, 255, 0.84);
+    color: var(--ink);
+    text-align: left;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
+    backdrop-filter: blur(16px);
+    transition: transform 0.22s var(--ease), background 0.22s var(--ease);
+    text-transform: capitalize;
 }
 
-.selected-beacon:hover {
+/* .selected-beacon:hover {
   transform: translateX(-50%) translateY(-2px);
   background: #fff;
-}
+} */
 
 .beacon-swatch {
   width: 48px;
@@ -738,6 +742,7 @@ button {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  text-transform: capitalize;
 }
 
 .beacon-copy strong {
@@ -970,17 +975,17 @@ button {
 }
 
 .palette-tray {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 18px;
-  margin: 22px auto 0;
-  padding: 14px 18px;
-  width: min(1020px, 100%);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  box-shadow: var(--shadow-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin: 22px auto 0 115px;
+    padding: 14px 18px;
+    width: min(987px, 100%);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    box-shadow: var(--shadow-soft);
 }
 
 .palette-tray strong {
@@ -3557,9 +3562,9 @@ body {
   bottom: clamp(124px, 9vw, 154px) !important;
 }
 
-.selected-beacon {
+/* .selected-beacon {
   bottom: 30px !important;
-}
+} */
 
 /* Text in the top card cap should sit in the centre instead of drifting right. */
 .card-cap {
@@ -3950,9 +3955,9 @@ body.modal-open {
   bottom: clamp(150px, 10vw, 185px) !important;
 }
 
-.selected-beacon {
+/* .selected-beacon {
   bottom: 36px !important;
-}
+} */
 
 .bottom-console {
   width: min(1020px, 100% - 44px) !important;
@@ -3967,9 +3972,9 @@ body.modal-open {
   background: rgba(255, 255, 255, 0.92) !important;
 }
 
-.palette-tray {
+/* .palette-tray {
   margin-top: 22px !important;
-}
+} */
 
 /* Make palette swatch names readable without turning the tile into a text block. */
 .palette-tile .tile-name {
@@ -4178,7 +4183,7 @@ body.modal-open {
   .selected-beacon:focus-visible {
     left: 12px !important;
     right: 12px !important;
-    width: auto !important;
+    width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
     transform: none !important;
@@ -4208,6 +4213,24 @@ body.modal-open {
   .beacon-copy strong {
     font-size: 0.88rem !important;
   }
+}
+
+.vertical-control {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+  border-radius: 999px;
+  padding: 40px 14px; 
+}
+#rangeSlider {
+  appearance: slider-vertical;
+  writing-mode: vertical-rl;
+  direction: rtl;
+  width: 44px;
+  height: 160px;
+  border-radius: 999px;
+  accent-color: var(--brand);
+  background: transparent; 
+  box-shadow: none;
 }
 
 /*# sourceMappingURL=style.css.map */
