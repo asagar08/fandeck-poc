@@ -1851,3 +1851,77 @@ function cssEscape(value) {
   if (window.CSS?.escape) return CSS.escape(String(value));
   return String(value).replace(/"/g, "\\\"");
 }
+
+function sliderrange(){
+          const sliders = document.getElementById('rangeSlider')[1];
+          const arcFill = document.getElementById('arc-fill');
+          const arcThumb = document.getElementById('arc-thumb');
+          const spVal = document.getElementById('sp-val');
+          const svg = document.querySelector('.speed-arc svg');
+
+          const arcLength = arcFill.getTotalLength();
+          arcFill.setAttribute('stroke-dasharray', arcLength);
+
+          function updateArc() {
+            const v = +rangeSlider.value;
+            arcFill.setAttribute('stroke-dashoffset', arcLength - (v / 100 * arcLength));
+            const angle = Math.PI * (v / 100);
+            const cx = 130 - 110 * Math.cos(angle);
+            const cy = 130 - 110 * Math.sin(angle);
+            arcThumb.setAttribute('cx', cx);
+            arcThumb.setAttribute('cy', cy);
+            spVal.innerHTML = v + ' <span class="speed-unit">km/h</span>';
+          }
+          rangeSlider.addEventListener('input', updateArc);
+
+          function updateArc() {
+            const v = +rangeSlider.value;
+
+            arcFill.setAttribute('stroke-dashoffset', arcLength - (v / 100 * arcLength));
+
+            const angle = Math.PI * (v / 100);
+
+            const centerX = 130, centerY = 130, radius = 110;
+
+            const cx = centerX - radius * Math.cos(angle);
+            const cy = centerY - radius * Math.sin(angle);
+
+            arcThumb.setAttribute('cx', cx);
+            arcThumb.setAttribute('cy', cy);
+
+            spVal.innerHTML = v + ' <span class="speed-unit">km/h</span>';
+          }
+
+          rangeSlider.addEventListener('input', updateArc);
+          updateArc();
+
+          // optional: make arc itself draggable
+          function startDrag(e) {
+            e.preventDefault();
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchend', stopDrag);
+          }
+          function drag(e) {
+            const rect = svg.getBoundingClientRect();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+            const dx = 130 - x, dy = 130 - y;
+            let angle = Math.atan2(dy, dx);
+            if (angle < 0) angle = 0;
+            if (angle > Math.PI) angle = Math.PI;
+            const value = Math.round((angle / Math.PI) * 100);
+            rangeSlider.value = value;
+            updateArc();
+          }
+          function stopDrag() {
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('touchend', stopDrag);
+          }
+          svg.addEventListener('mousedown', startDrag);
+          svg.addEventListener('touchstart', startDrag);
+}
+sliderrange();

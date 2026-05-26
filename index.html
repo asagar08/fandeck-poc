@@ -82,10 +82,23 @@
 
     <!-- Main fandeck: vertical range, fan cards, and selected shade room preview. -->
     <section class="deck-section" aria-label="Digital fandeck canvas">
-      <aside class="vertical-control vertical-control-upd" aria-label="Vertical shade range control">
+      <aside class="mob-visible vertical-control vertical-control-upd" aria-label="Vertical shade range control">
         <span id="rangeCount">1794 / 2200</span>
         <input id="rangeSlider" type="range" min="0" max="2199" value="0" orient="vertical" aria-label="Shade range">
       </aside>
+
+      <aside class="vertical-control-color hidden-sm" aria-label="Vertical shade range control">
+        <section class="palette-tray" aria-label="Saved palette">
+          <div>
+            <strong>Colour selection</strong>
+            <span id="paletteHint">Use the + symbol on fan strips, Save shade, or smart palette tiles
+              to shortlist colours.</span>
+          </div>
+          <div id="favoriteTray" class="favorite-tray"></div>
+        </section>
+      </aside>
+
+
       <div id="fanStage" class="fan-stage" tabindex="0" aria-label="Fan deck. Drag or use arrow keys to browse shades.">
         <div class="deck-shadow"></div>
         <div id="fanDeck" class="fan-deck" aria-live="polite"></div>
@@ -97,6 +110,24 @@
           </span>
           <i class="ri-arrow-right-up-line" aria-hidden="true"></i>
         </button>
+
+        <div class="card range-speadometer-model hidden-sm">
+
+          <div class="speed-arc">
+            <svg viewBox="0 0 467 269" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20,240 A230,230 0 0,1 480,240" fill="none" stroke="#EEEDFE" stroke-width="18"
+                stroke-linecap="round" />
+              <path id="arc-fill" d="M20,240 A230,230 0 0,1 480,240" fill="none" stroke="#075da7" stroke-width="18"
+                stroke-linecap="round" stroke-dasharray="345" stroke-dashoffset="172" />
+              <circle id="arc-thumb" cx="130" cy="44" r="18" fill="#534AB7"
+                style="filter:drop-shadow(0 0 6px rgba(83,74,183,.6))" />
+            </svg>
+            <input type="range" id="rangeSlider" min="0" max="100" value="50" step="1" aria-label="Speed">
+            <span id="rangeCount" class="card-label">1794 / 2200</span>
+
+          </div>
+        </div>
+
       </div>
 
       <aside class="insight-card" aria-label="Selected colour summary">
@@ -162,7 +193,9 @@
         </button>
       </section> -->
 
-    <section class="palette-tray" aria-label="Saved palette">
+
+
+    <section class="palette-tray mob-visible" aria-label="Saved palette">
       <div>
         <strong>Colour selection</strong>
         <span id="paletteHint">Use the + symbol on fan strips, Save shade, or smart palette tiles
