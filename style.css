@@ -4322,7 +4322,8 @@ body.modal-open {
     max-width: 300px;
     position: absolute;
     bottom: -64px;
-    left: 333px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   /* ── Arc ── */
