@@ -84,7 +84,7 @@ button {
   z-index: 40;
   min-height: 86px;
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) auto minmax(280px, 1fr) 56px;
+  grid-template-columns: minmax(210px, 1fr) minmax(300px, 2fr) minmax(350px, 1fr) 56px;
   align-items: center;
   gap: 24px;
   padding: 14px clamp(16px, 4vw, 64px);
@@ -470,7 +470,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 60px;
   padding: 10px 15px;
   border-radius: 12px;
   color: var(--brand-dark);
@@ -493,22 +493,27 @@ button {
 .deck-section {
   position: relative;
   display: grid;
-  grid-template-columns: 90px minmax(0, 1fr) minmax(270px, 330px);
-  gap: clamp(14px, 2vw, 26px);
+  grid-template-columns: 250px minmax(0, 1fr) minmax(270px, 250px);
+  gap: clamp(14px, 2vw, 18px);
   align-items: stretch;
-  min-height: clamp(520px, 62vw, 760px);
+  min-height: clamp(520px, 62vw, 580px);
   margin-top: 10px;
+  grid-template-rows: 1fr auto;
 }
 
 .vertical-control {
+  position: relative;
   align-self: center;
   justify-self: center;
-  width: 72px;
-  min-height: min(500px, 58vh);
+  width: 25px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+  border-radius: 999px;
 }
 
 .vertical-control span {
@@ -533,9 +538,9 @@ button {
   height: min(440px, 51vh);
   padding: 14px 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: var(--shadow-soft);
-  accent-color: var(--brand);
+   accent-color: var(--brand);
+  background: transparent; 
+  box-shadow: none;
 }
 
 .fan-stage {
@@ -694,31 +699,31 @@ button {
 }
 
 .selected-beacon {
-  position: absolute;
-  left: 50%;
-  bottom: 25px;
-  transform: translateX(-50%);
-  z-index: 6;
-  min-width: min(510px, 100% - 32px);
-  max-width: calc(100% - 32px);
-  display: grid;
-  grid-template-columns: 48px 1fr 38px;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 14px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.84);
-  color: var(--ink);
-  text-align: left;
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
-  backdrop-filter: blur(16px);
-  transition: transform 0.22s var(--ease), background 0.22s var(--ease);
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    z-index: 6;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 48px 1fr 38px;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 12px 12px 0 0;
+    background: rgba(255, 255, 255, 0.84);
+    color: var(--ink);
+    text-align: left;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
+    backdrop-filter: blur(16px);
+    transition: transform 0.22s var(--ease), background 0.22s var(--ease);
+    text-transform: capitalize;
 }
 
-.selected-beacon:hover {
+/* .selected-beacon:hover {
   transform: translateX(-50%) translateY(-2px);
   background: #fff;
-}
+} */
 
 .beacon-swatch {
   width: 48px;
@@ -738,6 +743,7 @@ button {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  text-transform: capitalize;
 }
 
 .beacon-copy strong {
@@ -970,17 +976,17 @@ button {
 }
 
 .palette-tray {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 18px;
-  margin: 22px auto 0;
-  padding: 14px 18px;
-  width: min(1020px, 100%);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  box-shadow: var(--shadow-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin: 22px auto 0 115px;
+    padding: 14px 18px;
+    width: min(987px, 100%);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    box-shadow: var(--shadow-soft);
 }
 
 .palette-tray strong {
@@ -991,6 +997,8 @@ button {
 .palette-tray span {
   color: var(--muted);
   font-size: 0.82rem;
+  display: inline-block;
+  padding-top: 10px;
 }
 
 .favorite-tray {
@@ -1351,7 +1359,6 @@ button {
     top: 28px;
     z-index: 8;
     width: 50px;
-    min-height: 285px;
   }
   .vertical-control span {
     font-size: 0.68rem;
@@ -1385,6 +1392,7 @@ button {
     min-width: calc(100% - 24px);
     grid-template-columns: 42px 1fr 30px;
     padding: 9px 12px;
+    position: relative;
   }
   .beacon-swatch {
     width: 42px;
@@ -1478,7 +1486,7 @@ button {
     min-height: 500px;
   }
   .vertical-control {
-    top: 20px;
+    top: 120px;
   }
   #rangeSlider {
     height: 220px;
@@ -3542,7 +3550,7 @@ body {
 /* Keep the fan visually higher in the canvas so it feels more like a real deck. */
 .deck-section {
   margin-top: 0 !important;
-  min-height: clamp(500px, 58vw, 720px) !important;
+  min-height: clamp(500px, 58vw, 580px) !important;
 }
 
 .fan-stage {
@@ -3557,9 +3565,9 @@ body {
   bottom: clamp(124px, 9vw, 154px) !important;
 }
 
-.selected-beacon {
+/* .selected-beacon {
   bottom: 30px !important;
-}
+} */
 
 /* Text in the top card cap should sit in the centre instead of drifting right. */
 .card-cap {
@@ -3653,6 +3661,8 @@ body {
   box-shadow: 0 12px 24px rgba(7, 93, 167, 0.2);
   font-size: 0.82rem;
   font-weight: 950;
+  width: 100%;
+  justify-content: center;
 }
 
 .review-selection:hover {
@@ -3805,13 +3815,13 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 12px;
+    margin: 0;
   }
   .favorite-tray {
     width: 100%;
     justify-content: flex-start;
   }
   .review-selection {
-    width: 100%;
     justify-content: center;
   }
   .smart-palette {
@@ -3938,7 +3948,7 @@ body.modal-open {
 }
 
 .fan-stage {
-  min-height: clamp(560px, 61vw, 760px) !important;
+  min-height: clamp(560px, 61vw, 580px) !important;
   border-radius: 12px;
 }
 
@@ -3950,9 +3960,9 @@ body.modal-open {
   bottom: clamp(150px, 10vw, 185px) !important;
 }
 
-.selected-beacon {
+/* .selected-beacon {
   bottom: 36px !important;
-}
+} */
 
 .bottom-console {
   width: min(1020px, 100% - 44px) !important;
@@ -3967,9 +3977,9 @@ body.modal-open {
   background: rgba(255, 255, 255, 0.92) !important;
 }
 
-.palette-tray {
+/* .palette-tray {
   margin-top: 22px !important;
-}
+} */
 
 /* Make palette swatch names readable without turning the tile into a text block. */
 .palette-tile .tile-name {
@@ -4178,7 +4188,7 @@ body.modal-open {
   .selected-beacon:focus-visible {
     left: 12px !important;
     right: 12px !important;
-    width: auto !important;
+    width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
     transform: none !important;
@@ -4210,4 +4220,210 @@ body.modal-open {
   }
 }
 
+.vertical-control {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+  border-radius: 999px;
+}
+#rangeSlider {
+  appearance: slider-vertical;
+  writing-mode: vertical-rl;
+  direction: rtl;
+  width: 44px;
+  height: 160px;
+  border-radius: 999px;
+  accent-color: var(--brand);
+  background: transparent; 
+  box-shadow: none;
+}
+
 /*# sourceMappingURL=style.css.map */
+
+
+.vertical-control-upd input{
+	-webkit-appearance:none;
+	width:400px;
+	height:4px;
+	border-radius:5px;
+	background-color:#ba3950;
+	outline:none;
+}
+.vertical-control-upd input::-webkit-slider-thumb{
+	-webkit-appearance:none;
+	width:20px;
+	height:20px;
+	border-radius:50%;
+	background-color:#a83348;
+}
+.vertical-control-upd span {
+    position: absolute;
+    margin-left: 14px;
+    width: 80px;
+    max-height: 50px;
+    background-color: #222;
+    color: #fff;
+    border-radius: 3px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 12px;
+    bottom: -60px;
+    left: -29px;
+}
+.vertical-control-upd span:before{
+	content:'';
+	position:absolute;
+	border-top:9px solid transparent;
+	border-bottom:9px solid transparent;
+	border-left:12px solid #222;
+	left: 25px;
+  top: -4px;
+	transform:translateY(-50%) rotate(-90deg);
+}
+
+
+
+@media (min-width: 1025px) {
+  .mob-visible {
+    display: none ;
+  }
+}
+@media (max-width: 1024px) {
+  .hidden-sm {
+    display: none !important ;
+  }
+  .palette-tray {
+    margin-left: 0;
+  }
+}
+
+.vertical-control-color {
+    position: relative;
+    align-self: start;
+    justify-self: center;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 0px;
+}
+
+
+.vertical-control-color   .palette-tray {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    margin: 0 !important;
+    padding: 18px !important;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    box-shadow: var(--shadow-soft);
+}
+
+ .range-speadometer-model {
+    border: 0.5px solid var(--border);
+    width: 100%;
+    max-width: 300px;
+    position: absolute;
+    bottom: -64px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* ── Arc ── */
+ .range-speadometer-model .arc-wrap {
+    position: relative;
+    width: 100%;
+    user-select: none;
+    touch-action: none;
+    margin-bottom: .5rem;
+  }
+  .range-speadometer-model .arc-wrap svg {
+    width: 100%;
+    overflow: visible;
+  }
+
+  /* ── Center value ── */
+  .range-speadometer-model .center-val {
+    position: absolute;
+    left: 50%;
+    bottom: 74px;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+  }
+   .range-speadometer-model .cv-big {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+  }
+   .range-speadometer-model .cv-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── Edge labels ── */
+   .range-speadometer-model .edge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 0 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Section card ── */
+   .range-speadometer-model .section-card {
+    background: var(--bg2);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    border: 0.5px solid var(--border);
+    transition: border-color .3s;
+  }
+   .range-speadometer-model .sec-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: .75rem;
+  }
+   .range-speadometer-model .sec-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: background .3s;
+  }
+   .range-speadometer-model .sec-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+   .range-speadometer-model .sec-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .range-speadometer-model  .sec-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: .9rem;
+  }
+   .range-speadometer-model .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: background .3s, color .3s;
+  }
+button.fan-card {
+    max-height: 350px !important;
+}

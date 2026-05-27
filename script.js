@@ -111,7 +111,7 @@ function cacheDom() {
   dom.activeRgb = $("#activeRgb");
   dom.previewWall = $("#previewWall");
   dom.favoriteCurrent = $("#favoriteCurrent");
-  dom.favoriteTray = $("#favoriteTray");
+  dom.favoriteTray =  $("#favoriteTray, #favoriteTrayMob");
   dom.toggleFavorites = $("#toggleFavorites");
   dom.openDetails = $("#openDetails");
   dom.randomShade = $("#randomShade");
@@ -738,7 +738,6 @@ function fanCardMarkup(shade, slot, context) {
       <div class="card-strip" data-hex="${escapeAttr(tintB)}" data-role="Wall tone" data-label="${escapeAttr(`${shade.name} Wall Tone`)}" style="background:${tintB}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 1))}</span><span class="strip-add" aria-hidden="true">+</span></div>
       <div class="card-strip" data-hex="${escapeAttr(tintC)}" data-role="Primary" data-label="${escapeAttr(shade.name)}" style="background:${tintC}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 2))}</span><span class="strip-add" aria-hidden="true">+</span></div>
       <div class="card-strip" data-hex="${escapeAttr(tintD)}" data-role="Deep accent" data-label="${escapeAttr(`${shade.name} Deep Accent`)}" style="background:${tintD}"><span class="strip-code">${escapeHtml(shortCode(shade.code, 3))}</span><span class="strip-add" aria-hidden="true">+</span></div>
-      <span class="card-name">${escapeHtml(shade.name)}</span>
     </button>`;
 }
 
@@ -1852,3 +1851,136 @@ function cssEscape(value) {
   if (window.CSS?.escape) return CSS.escape(String(value));
   return String(value).replace(/"/g, "\\\"");
 }
+
+(function () {
+  'use strict';
+
+  function initArcSlider() {
+    const slider = document.getElementById('rangeSlider');
+    if (!slider) return;
+
+    const MIN  = parseFloat(slider.min)  || 0;
+    const MAX  = parseFloat(slider.max)  || 100;
+    const STEP = parseFloat(slider.step) || 1;
+
+    const SECTIONS = [
+      { min: 0,  max: 24,  color: '#E24B4A', bg: '#FCEAEA', icon: 'ti ti-seedling', title: 'Getting started',     desc: "You're at the very beginning. Explore the basics and take your first steps.",  tags: ['Intro', 'Basics', 'Setup']        },
+      { min: 25, max: 49,  color: '#EF9F27', bg: '#FDF3E3', icon: 'ti ti-flame',    title: 'Building momentum',   desc: "You've got the hang of it. Build key skills and a consistent daily habit.",    tags: ['Practice', 'Habits', 'Skills']    },
+      { min: 50, max: 74,  color: '#1D9E75', bg: '#E6F6F1', icon: 'ti ti-bolt',     title: 'Hitting your stride', desc: "Great progress! Applying what you've learned to real challenges.",             tags: ['Projects', 'Challenges', 'Speed'] },
+      { min: 75, max: 100, color: '#5B4CF5', bg: '#ECEAFD', icon: 'ti ti-crown',    title: 'Mastery zone',        desc: "Outstanding! Deep dives, mentorship, and certification are within reach.",    tags: ['Advanced', 'Mastery', 'Certify']  }
+    ];
+
+    const CX = 150, CY = 152, R = 124;
+    const START_DEG = 210, END_DEG = 330;
+    const SPAN    = ((END_DEG - START_DEG) + 360) % 360;
+    const ARC_LEN = (SPAN / 360) * 2 * Math.PI * R;
+
+    function deg2rad(d) { return d * Math.PI / 180; }
+
+    function ptOnArc(deg) {
+      return {
+        x: CX + R * Math.cos(deg2rad(deg)),
+        y: CY + R * Math.sin(deg2rad(deg))
+      };
+    }
+
+    function arcPathD(a1, a2) {
+      const s = ptOnArc(a1), e = ptOnArc(a2);
+      const sp = ((a2 - a1) + 360) % 360;
+      return `M${s.x} ${s.y} A${R} ${R} 0 ${sp > 180 ? 1 : 0} 1 ${e.x} ${e.y}`;
+    }
+
+    const bgArc   = document.getElementById('bgArc');
+    const fillArc = document.getElementById('fillArc');
+    const thumbEl = document.getElementById('thumb');
+    const dotEl   = document.getElementById('dot');
+    const svgEl   = document.getElementById('arcSvg');
+    if (!bgArc || !fillArc || !thumbEl || !dotEl || !svgEl) return;
+
+    bgArc.setAttribute('d', arcPathD(START_DEG, END_DEG));
+    fillArc.setAttribute('d', arcPathD(START_DEG, END_DEG));
+    fillArc.setAttribute('stroke-dasharray', ARC_LEN);
+    fillArc.setAttribute('stroke-dashoffset', ARC_LEN);
+
+    function getSection(v) {
+      const pct = ((v - MIN) / (MAX - MIN)) * 100;
+      return SECTIONS.find(s => pct >= s.min && pct <= s.max) || SECTIONS[0];
+    }
+
+    function update(t) {
+      const v   = MIN + t * (MAX - MIN);
+      const sec = getSection(v);
+
+      fillArc.setAttribute('stroke-dashoffset', ARC_LEN - t * ARC_LEN);
+
+      const pt = ptOnArc(START_DEG + t * SPAN);
+      thumbEl.setAttribute('cx', pt.x); thumbEl.setAttribute('cy', pt.y);
+      dotEl.setAttribute('cx',   pt.x); dotEl.setAttribute('cy',   pt.y);
+      thumbEl.setAttribute('stroke', sec.color);
+      thumbEl.style.filter = `drop-shadow(0 2px 8px ${sec.color}55)`;
+      dotEl.setAttribute('fill', sec.color);
+
+      const cvNum = document.getElementById('cvNum');
+      if (cvNum) cvNum.textContent = Math.round(v);
+
+      const secCard  = document.getElementById('secCard');
+      const secIcon  = document.getElementById('secIcon');
+      const secIco   = document.getElementById('secIco');
+      const secTitle = document.getElementById('secTitle');
+      const secDesc  = document.getElementById('secDesc');
+      const secTags  = document.getElementById('secTags');
+
+      if (secCard)  secCard.style.borderColor = sec.color;
+      if (secIcon)  secIcon.style.background  = sec.bg;
+      if (secIco) { secIco.style.color        = sec.color;
+                    secIco.className          = 'ti ' + sec.icon.replace('ti ', ''); }
+      if (secTitle) secTitle.textContent      = sec.title;
+      if (secDesc)  secDesc.textContent       = sec.desc;
+      if (secTags)  secTags.innerHTML         = sec.tags
+        .map(tag => `<span class="tag" style="background:${sec.bg};color:${sec.color}">${tag}</span>`)
+        .join('');
+    }
+
+    function setVal(v) {
+      v = Math.max(MIN, Math.min(MAX, Math.round(v / STEP) * STEP));
+      slider.value = v;
+      slider.dispatchEvent(new Event('input',  { bubbles: true }));
+      slider.dispatchEvent(new Event('change', { bubbles: true }));
+      update((v - MIN) / (MAX - MIN));
+    }
+
+    slider.addEventListener('input',  () => update((parseFloat(slider.value) - MIN) / (MAX - MIN)));
+    slider.addEventListener('change', () => update((parseFloat(slider.value) - MIN) / (MAX - MIN)));
+
+    let dragging = false;
+
+    function pointerToT(e) {
+      const rect = svgEl.getBoundingClientRect();
+      const px   = ((e.touches ? e.touches[0].clientX : e.clientX) - rect.left) * (300 / rect.width);
+      const py   = ((e.touches ? e.touches[0].clientY : e.clientY) - rect.top)  * (155 / rect.height);
+      let angle  = Math.atan2(py - CY, px - CX) * 180 / Math.PI;
+      if (angle < 0) angle += 360;
+      let t = ((angle - START_DEG) + 360) % 360 / SPAN;
+      if (t > 0.95) t = 1;
+      if (t < 0.05) t = 0;
+      return Math.max(0, Math.min(1, t));
+    }
+
+    thumbEl.addEventListener('mousedown',  e => { dragging = true; e.preventDefault(); });
+    thumbEl.addEventListener('touchstart', e => { dragging = true; e.preventDefault(); }, { passive: false });
+    document.addEventListener('mousemove', e => { if (dragging) setVal(MIN + pointerToT(e) * (MAX - MIN)); });
+    document.addEventListener('touchmove', e => { if (dragging) setVal(MIN + pointerToT(e) * (MAX - MIN)); }, { passive: false });
+    document.addEventListener('mouseup',  () => dragging = false);
+    document.addEventListener('touchend', () => dragging = false);
+    svgEl.addEventListener('click', e => setVal(MIN + pointerToT(e) * (MAX - MIN)));
+
+    update((parseFloat(slider.value) - MIN) / (MAX - MIN));
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initArcSlider);
+  } else {
+    initArcSlider();
+  }
+
+})();
