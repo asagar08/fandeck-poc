@@ -84,7 +84,7 @@ button {
   z-index: 40;
   min-height: 86px;
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) auto minmax(280px, 1fr) 56px;
+  grid-template-columns: minmax(210px, 1fr) minmax(300px, 2fr) minmax(350px, 1fr) 56px;
   align-items: center;
   gap: 24px;
   padding: 14px clamp(16px, 4vw, 64px);
