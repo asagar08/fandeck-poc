@@ -392,8 +392,8 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  margin: 22px 0 8px;
+  gap: 8px;
+  margin: 8px 0 8px;
 }
 
 .category-card {
@@ -648,7 +648,7 @@ button {
   height: 14%;
   display: grid;
   place-items: center;
-  border-top: 4px solid rgba(255, 255, 255, 0.48);
+  border-top: 1px solid rgba(255, 255, 255, 0.48);
   color: rgba(15, 23, 42, 0.85);
   font-size: clamp(0.5rem, 0.7vw, 0.68rem);
   font-weight: 800;
@@ -1341,6 +1341,10 @@ button {
   }
   .range-label {
     margin: 0 0 7px 4px;
+    box-shadow: none !important;
+    background: none !important;
+    text-align: center;
+    font-size: 15px;
   }
   .tabs {
     max-width: 100%;
@@ -1348,6 +1352,7 @@ button {
   .mini-actions {
     overflow-x: auto;
     padding-bottom: 2px;
+    justify-content: center;
   }
   .deck-section {
     grid-template-columns: 1fr;
@@ -1356,9 +1361,10 @@ button {
   .vertical-control {
     position: absolute;
     left: 12px;
-    top: 28px;
+    top: 50%;
     z-index: 8;
     width: 50px;
+    transform: translateY(-50%);
   }
   .vertical-control span {
     font-size: 0.68rem;
@@ -1485,9 +1491,9 @@ button {
   .deck-section {
     min-height: 500px;
   }
-  .vertical-control {
+  /* .vertical-control {
     top: 120px;
-  }
+  } */
   #rangeSlider {
     height: 220px;
   }
@@ -1586,7 +1592,7 @@ body.modal-open {
   padding: 8px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.74);
-  border: 1px solid rgba(255, 255, 255, 0.86);
+  /* border: 1px solid rgba(255, 255, 255, 0.86); */
   box-shadow: 0 18px 46px rgba(15, 23, 42, 0.13), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
@@ -1599,7 +1605,7 @@ body.modal-open {
   min-height: 44px;
   padding: 10px 13px;
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.055);
+  /* border: 1px solid rgba(15, 23, 42, 0.055); */
   border-radius: 12px;
   color: #334155;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), var(--tab-soft, rgba(7, 93, 167, 0.1)));
@@ -3164,7 +3170,7 @@ body.modal-open {
   border-radius: 20px !important;
   color: var(--ink) !important;
   background: rgba(255, 255, 255, 0.92) !important;
-  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  /* border: 1px solid rgba(15, 23, 42, 0.1) !important; */
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08) !important;
 }
 
@@ -4134,12 +4140,12 @@ body.modal-open {
   .fan-deck {
     bottom: 100px !important;
   }
-  .selected-beacon {
+  /* .selected-beacon {
     left: 12px !important;
     right: 12px !important;
     bottom: 22px !important;
     width: auto !important;
-  }
+  } */
   .bottom-console {
     grid-template-columns: 44px minmax(0, 1fr) 44px !important;
   }
@@ -4159,6 +4165,7 @@ body.modal-open {
   height: calc(100vh - 56px) !important;
   height: calc(100svh - 56px) !important;
   max-height: 720px !important;
+  border: none;
 }
 
 @media (max-width: 980px) {
@@ -4183,7 +4190,7 @@ body.modal-open {
    On narrow screens the beacon is pinned with left/right gutters, so it must
    not inherit the desktop translateX(-50%) centering transform. */
 @media (max-width: 520px) {
-  .selected-beacon,
+  /* .selected-beacon,
   .selected-beacon:hover,
   .selected-beacon:focus-visible {
     left: 12px !important;
@@ -4193,19 +4200,19 @@ body.modal-open {
     max-width: none !important;
     transform: none !important;
     box-sizing: border-box !important;
-  }
-  .selected-beacon {
+  } */
+  /* .selected-beacon {
     grid-template-columns: 42px minmax(0, 1fr) 30px !important;
   }
   .selected-beacon:hover,
   .selected-beacon:focus-visible {
     transform: translateY(-2px) !important;
-  }
+  } */
 }
 @media (max-width: 380px) {
   .selected-beacon {
-    left: 10px !important;
-    right: 10px !important;
+    /* left: 10px !important;
+    right: 10px !important; */
     grid-template-columns: 38px minmax(0, 1fr) 28px !important;
     gap: 9px !important;
     padding: 8px 10px !important;
