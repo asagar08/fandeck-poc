@@ -25,6 +25,7 @@
 
 html {
   scroll-behavior: smooth;
+   background: #f0f4fb;
 }
 
 body {
@@ -34,6 +35,22 @@ body {
   color: var(--ink);
   background: radial-gradient(circle at 17% 15%, rgba(237, 28, 36, 0.1), transparent 30%), radial-gradient(circle at 80% 12%, rgba(111, 45, 168, 0.12), transparent 28%), linear-gradient(135deg, #fbfcff 0%, #edf4fb 52%, #f8fbff 100%);
   overflow-x: hidden;
+   opacity: 0;
+   background-color: #edf4fb;
+  transition: opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.ap-ready {
+  opacity: 1;
+}
+.app-shell, .topbar {
+  opacity: 0;
+  transition: opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.ap-ready .app-shell,
+body.ap-ready .topbar {
+  opacity: 1;
 }
 
 button,
@@ -55,6 +72,8 @@ button {
   aspect-ratio: 1;
   border-radius: 999px;
   filter: blur(90px);
+  will-change: filter;
+  transform: translateZ(0);
   opacity: 0.34;
   pointer-events: none;
   z-index: -1;
@@ -642,6 +661,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   background: var(--card-bg, #fff);
   overflow: hidden;
   transition:
+    transform 0.22s var(--ease),
     filter 0.22s var(--ease),
     box-shadow 0.22s var(--ease);
   will-change: transform;
@@ -826,6 +846,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   margin: 18px 0 16px;
   overflow: hidden;
   background: var(--preview-color, #dbeafe);
+  transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 

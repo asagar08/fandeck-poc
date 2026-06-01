@@ -50,6 +50,8 @@ const dom = {};
 
 $(init);
 
+setTimeout(() => document.body.classList.add("ap-ready"), 800);
+
 async function init() {
   cacheDom();
   registerPlugins();
@@ -1334,6 +1336,7 @@ function clearSearch() {
 }
 
 function setupGsapIntro() {
+  document.body.classList.add("ap-ready");
   if (!window.gsap) return;
   gsap.from(".brand, .title-block, .search-wrap, .approve-btn", { y: -18, opacity: 0, duration: .55, ease: "power3.out", stagger: .05 });
   gsap.from(".hero-copy > *, .control-row, .deck-section", { y: 22, opacity: 0, duration: .7, ease: "power3.out", stagger: .08, delay: .08 });
@@ -1504,13 +1507,17 @@ function pulseDeck() {
 }
 
 function setLoading(isLoading) {
-  if (!isLoading) return;
-  dom.progressText.text("Loading local Asian Paints colour catalogue...");
-  dom.beaconName.text("Loading shades");
-  dom.beaconMeta.text("Reading apcatalogue.json");
+  if (isLoading) {
+    dom.progressText.text("Loading local Asian Paints colour catalogue...");
+    dom.beaconName.text("Loading shades");
+    dom.beaconMeta.text("Reading apcatalogue.json");
+    return;
+  }
+  dom.tabs.find(".tab.shimmer").removeClass("shimmer");
 }
 
 function showDataError(message) {
+   document.body.classList.add("ap-ready");
   state.all = [];
   state.filtered = [];
   state.selectedId = null;
