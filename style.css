@@ -30,7 +30,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: 'Manrope', sans-serif;
   color: var(--ink);
   background: radial-gradient(circle at 17% 15%, rgba(237, 28, 36, 0.1), transparent 30%), radial-gradient(circle at 80% 12%, rgba(111, 45, 168, 0.12), transparent 28%), linear-gradient(135deg, #fbfcff 0%, #edf4fb 52%, #f8fbff 100%);
   overflow-x: hidden;
@@ -84,7 +84,8 @@ button {
   z-index: 40;
   min-height: 86px;
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) minmax(300px, 2fr) minmax(350px, 1fr) 56px;
+  /* grid-template-columns: minmax(210px, 1fr) minmax(300px, 2fr) minmax(350px, 1fr) 56px; */
+  grid-template-columns: minmax(210px, 1fr) minmax(300px, 2fr);
   align-items: center;
   gap: 24px;
   padding: 14px clamp(16px, 4vw, 64px);
@@ -92,6 +93,7 @@ button {
   background: rgba(248, 251, 255, 0.84);
   backdrop-filter: blur(18px) saturate(160%);
   box-shadow: 0 8px 26px rgba(15, 23, 42, 0.05);
+  padding-left: 2%;
 }
 
 .brand {
@@ -139,6 +141,16 @@ button {
 .brand-copy {
   display: grid;
   line-height: 1;
+  justify-items: center;
+}
+.brand-copy picture{
+  width: 160px;
+  height: 31px;
+  cursor: pointer;
+}
+.brand-copy picture img{
+    width: 100%;
+    height: auto;
 }
 
 .brand-copy strong {
@@ -258,6 +270,7 @@ button {
 .icon-btn.ghost {
   background: transparent;
   color: var(--muted);
+  display: none;
 }
 
 .icon-btn.active {
@@ -281,6 +294,7 @@ button {
   box-shadow: 0 14px 28px rgba(237, 28, 36, 0.22);
   font-size: 1.7rem;
   transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
+  display: none;
 }
 
 .approve-btn:hover {
@@ -351,11 +365,11 @@ button {
   z-index: 2;
   width: min(1480px, 100% - clamp(24px, 4vw, 72px));
   margin: 0 auto;
-  padding: 24px 0 12px;
+  padding: 5px 0 34px;
 }
 
 .hero-copy {
-  max-width: 640px;
+  /* max-width: 640px; */
   margin-top: 4px;
 }
 
@@ -371,18 +385,19 @@ button {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
+  display: none;
 }
 
 .hero-copy h1 {
   margin: 12px 0 6px;
   font-size: clamp(1.55rem, 3.2vw, 3.25rem);
   line-height: 1.02;
-  letter-spacing: -0.075em;
+  letter-spacing: normal;
 }
 
 .hero-copy p {
   margin: 0;
-  max-width: 590px;
+  /* max-width: 590px; */
   color: var(--muted);
   font-size: clamp(0.94rem, 1.3vw, 1.05rem);
   line-height: 1.55;
@@ -818,7 +833,8 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(115deg, rgba(255, 255, 255, 0.28), transparent 48%), radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.38), transparent 24%);
+  border-radius: 12px;
+  /* background: linear-gradient(115deg, rgba(255, 255, 255, 0.28), transparent 48%), radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.38), transparent 24%); */
 }
 
 .preview-art {
@@ -831,6 +847,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   border-radius: 8px;
   background: linear-gradient(135deg, rgba(7, 93, 167, 0.45), rgba(249, 115, 22, 0.42));
   box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+  display:none
 }
 
 .preview-sofa {
@@ -842,6 +859,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   border-radius: 22px 22px 12px 12px;
   background: rgba(255, 255, 255, 0.82);
   box-shadow: 0 15px 28px rgba(15, 23, 42, 0.12);
+  display:none;
 }
 
 .preview-sofa::before,
@@ -870,12 +888,14 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   bottom: 0;
   height: 42px;
   background: linear-gradient(90deg, rgba(15, 23, 42, 0.1), rgba(255, 255, 255, 0.35));
+  display:none;
 }
 
 .insight-card h2 {
   margin: 0;
   font-size: clamp(1.25rem, 2vw, 1.75rem);
   letter-spacing: -0.05em;
+  text-transform: capitalize;
 }
 
 .insight-card p {
@@ -1024,7 +1044,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .favorite-dot {
@@ -1103,7 +1123,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.45), transparent 30%), linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 45%, rgba(0, 0, 0, 0.1));
+  /* background: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.45), transparent 30%), linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 45%, rgba(0, 0, 0, 0.1)); */
 }
 
 .modal-pattern {
@@ -1113,6 +1133,8 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   border-radius: 28px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.65)), repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.36) 0 12px, rgba(255, 255, 255, 0.08) 12px 24px);
   box-shadow: 0 18px 34px rgba(15, 23, 42, 0.16);
+
+  display: none;
 }
 
 .modal-content {
@@ -1491,7 +1513,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
     font-size: 0.68rem;
   }
   .hero-copy h1 {
-    letter-spacing: -0.06em;
+    /* letter-spacing: -0.06em; */
   }
   .tabs {
     padding: 5px;
@@ -2310,6 +2332,7 @@ body.modal-open {
 
 .modal-content h2 {
   max-width: 100%;
+  text-transform: capitalize;
   overflow-wrap: anywhere;
   letter-spacing: -0.065em;
 }
@@ -2550,7 +2573,7 @@ body.modal-open {
 }
 
 .modal-swatch::before {
-  background: radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.46), transparent 34%), radial-gradient(circle at 78% 76%, rgba(255, 255, 255, 0.36), transparent 32%), linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 48%, rgba(15, 23, 42, 0.09)) !important;
+  /* background: radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.46), transparent 34%), radial-gradient(circle at 78% 76%, rgba(255, 255, 255, 0.36), transparent 32%), linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 48%, rgba(15, 23, 42, 0.09)) !important; */
 }
 
 .modal-pattern {
@@ -2699,6 +2722,7 @@ body.modal-open {
 
 .palette-tile .tile-save i {
   font-size: 1rem !important;
+  transform: translate(-1px, 1px);
 }
 
 .palette-tile.saved .tile-save {
