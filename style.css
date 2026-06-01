@@ -351,7 +351,7 @@ button {
   z-index: 2;
   width: min(1480px, 100% - clamp(24px, 4vw, 72px));
   margin: 0 auto;
-  padding: 24px 0 34px;
+  padding: 24px 0 12px;
 }
 
 .hero-copy {
@@ -466,7 +466,7 @@ button {
   flex: 0 0 auto;
 }
 
-.pill-action {
+/* .pill-action {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -478,11 +478,29 @@ button {
   box-shadow: var(--shadow-soft);
   font-weight: 800;
   transition: transform 0.22s var(--ease), background 0.22s var(--ease);
-}
+} */
 
+.pill-action {
+    padding: 16px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#randomShade {
+background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+#toggleFavorites {
+background: linear-gradient(135deg, #ff6a00, #ee0979);
+}
 .pill-action:hover {
+  /* transform: translateY(-2px);
+  background: #fff; */
+   box-shadow: 0 0 12px rgba(0, 0, 0, 0.3),
+              0 0 20px rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
-  background: #fff;
 }
 
 .pill-action.active {
@@ -496,7 +514,7 @@ button {
   grid-template-columns: 250px minmax(0, 1fr) minmax(270px, 250px);
   gap: clamp(14px, 2vw, 18px);
   align-items: stretch;
-  min-height: clamp(520px, 62vw, 580px);
+  min-height: clamp(500px, 62vw, 500px);
   margin-top: 10px;
   grid-template-rows: 1fr auto;
 }
@@ -605,12 +623,12 @@ button {
   transform-origin: 50% calc(100% + var(--deck-origin));
   transform: translateX(-50%) rotate(var(--angle)) translateY(var(--lift, 0px));
   border: 0;
-  border-radius: 2px 2px 14px 14px;
   padding: 0;
   background: var(--card-bg, #fff);
-  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.44);
   overflow: hidden;
-  transition: filter 0.22s var(--ease), box-shadow 0.22s var(--ease);
+  transition:
+    filter 0.22s var(--ease),
+    box-shadow 0.22s var(--ease);
   will-change: transform;
 }
 
@@ -673,18 +691,22 @@ button {
 }
 
 .card-fav {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 26px;
-  height: 26px;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  color: rgba(15, 23, 42, 0.5);
-  background: rgba(255, 255, 255, 0.45);
-  opacity: 0;
-  transition: opacity 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    color: rgba(15, 23, 42, 0.5);
+    background: #fff;
+    opacity: 0;
+    transition: opacity 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
+    transform: translateX(-50%);
+}
+.fan-card .card-fav .ri-add-line::before{
+  color: #000;
 }
 
 .fan-card:hover .card-fav,
@@ -728,7 +750,6 @@ button {
 .beacon-swatch {
   width: 48px;
   height: 48px;
-  border-radius: 18px;
   background: #dbeafe;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 8px 18px rgba(15, 23, 42, 0.12);
 }
@@ -789,7 +810,6 @@ button {
   height: 235px;
   margin: 18px 0 16px;
   overflow: hidden;
-  border-radius: 26px;
   background: var(--preview-color, #dbeafe);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
@@ -798,7 +818,6 @@ button {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 12px;
   background: linear-gradient(115deg, rgba(255, 255, 255, 0.28), transparent 48%), radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.38), transparent 24%);
 }
 
@@ -1023,7 +1042,7 @@ button {
 }
 
 .colour-note {
-  margin: 18px 0 0;
+  margin: 0;
   color: var(--muted);
   text-align: center;
   font-size: 0.86rem;
@@ -1193,6 +1212,7 @@ button {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .primary-action,
@@ -1377,7 +1397,7 @@ button {
     height: 260px;
   }
   .fan-stage {
-    min-height: 560px;
+    min-height: 540px;
     border-radius: 28px;
   }
   .fan-deck {
@@ -1969,7 +1989,6 @@ body.modal-open {
 .tile-save {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
 }
 
 .palette-tile.saved .tile-save {
@@ -2611,14 +2630,18 @@ body.modal-open {
 .palette-tile,
 .palette-tile.featured,
 .palette-tile.wide {
+   display: flex;
+  flex-direction: column; /* vertical stacking */
+  justify-content: space-between; /* first span top, second span bottom */
   grid-column: auto !important;
   grid-row: auto !important;
   aspect-ratio: 1/1 !important;
   min-height: 0 !important;
   height: auto !important;
   padding: 10px !important;
-  border-radius: 22px !important;
+  border-radius: 0 !important;
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.13), inset 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+  border: none;
 }
 
 .palette-tile::before {
@@ -2659,18 +2682,19 @@ body.modal-open {
 
 .palette-tile .tile-save {
   position: absolute !important;
-  right: 8px !important;
+  right: 50% !important;
+  transform: translateX(-50%);
   bottom: 8px !important;
   width: 30px !important;
   height: 30px !important;
   display: grid !important;
   place-items: center !important;
-  padding: 0 !important;
   border-radius: 999px !important;
   background: rgba(255, 255, 255, 0.72) !important;
   color: inherit !important;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.32) !important;
   font-size: 0 !important;
+
 }
 
 .palette-tile .tile-save i {
@@ -3776,8 +3800,9 @@ body {
 
 .palette-tile .contrast-pill {
   position: absolute !important;
-  top: 8px !important;
-  left: 8px !important;
+  top: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%);
   right: auto !important;
   z-index: 2 !important;
   max-width: calc(100% - 16px) !important;
@@ -3787,8 +3812,9 @@ body {
 }
 
 .palette-tile .tile-save {
-  right: 8px !important;
-  bottom: 8px !important;
+  left: 50% !important;
+  bottom: 0 !important;
+  transform: translateX(-50%) !important;
 }
 
 .palette-tile.saved {
@@ -3954,7 +3980,7 @@ body.modal-open {
 }
 
 .fan-stage {
-  min-height: clamp(560px, 61vw, 580px) !important;
+  min-height: clamp(500px, 61vw, 500px) !important;
   border-radius: 12px;
 }
 
@@ -4432,5 +4458,7 @@ body.modal-open {
     transition: background .3s, color .3s;
   }
 button.fan-card {
-    max-height: 350px !important;
+    max-height: 325px !important;
+        border-bottom: 1px solid #000;
+    border-top: 1px solid #000 !important;
 }
