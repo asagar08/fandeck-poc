@@ -23,6 +23,137 @@ const FAVORITE_KEY = "asianpaints-fandeck-favorites-v1";
 const PALETTE_KEY = "asianpaints-fandeck-selection-v1";
 const MAX_SELECTION = 8;
 
+// ── URL Router ──────────────────────────────────────────────────────────────
+// Hash-based routing: index.html#/shade/deep-sea-7413
+// Works on any static host with zero server config.
+
+function makeSlug(name, code) {
+  return (name + "-" + code)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function shadeUrl(shade) {
+  return "#/shade/" + makeSlug(shade.name, shade.code);
+}
+
+function parseRoute() {
+  // Returns { type: "shade", slug } or { type: "home" }
+  const hash = location.hash; // e.g. "#/shade/deep-sea-7413"
+  const m = hash.match(/^#\/shade\/(.+)$/);
+  if (m) return { type: "shade", slug: m[1] };
+  return { type: "home" };
+}
+
+function findShadeBySlug(slug) {
+  // Exact match first, then fuzzy by code suffix
+  const code = slug.split("-").pop();
+  return (
+    state.all.find(s => makeSlug(s.name, s.code) === slug) ||
+    state.all.find(s => s.code.toLowerCase() === code)
+  );
+}
+
+function updatePageMeta(shade) {
+  const title = shade
+    ? `${shade.name} · Shade ${shade.code} · Asian Paints Digital Fandeck`
+    : "Asian Paints Digital Fandeck";
+  const desc = shade
+    ? `Explore ${shade.name} (code ${shade.code}) — HEX ${shade.hex.toUpperCase()}, RGB ${shade.rgbText}. Part of the ${shade.family} family in the Asian Paints Digital Fandeck.`
+    : "Browse 2200+ Asian Paints shades interactively. Search, shortlist, and compare colours from the complete Asian Paints catalogue.";
+  const url = shade
+    ? location.origin + location.pathname + shadeUrl(shade)
+    : location.origin + location.pathname;
+
+  document.title = title;
+  setMeta("description", desc);
+  setOg("og:title", title);
+  setOg("og:description", desc);
+  setOg("og:url", url);
+  if (shade) setOg("og:image", `https://swatch.asianpaints.com/${shade.code}.png`);
+  // canonical
+  let canon = document.querySelector("link[rel=canonical]");
+  if (!canon) { canon = document.createElement("link"); canon.rel = "canonical"; document.head.appendChild(canon); }
+  canon.href = url;
+
+  // JSON-LD structured data
+  const ld = document.getElementById("shadeJsonLd");
+  if (ld) {
+    const schema = shade ? {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": shade.name + " - Asian Paints Shade " + shade.code,
+      "description": "Asian Paints " + shade.name + " (code " + shade.code + ") - " + shade.family + " colour family. HEX: " + shade.hex.toUpperCase() + ", RGB: " + shade.rgbText + ".",
+      "brand": { "@type": "Brand", "name": "Asian Paints" },
+      "sku": shade.code,
+      "color": shade.name,
+      "url": url,
+      "image": "https://swatch.asianpaints.com/" + shade.code + ".png",
+      "offers": {
+        "@type": "Offer",
+        "availability": "https://schema.org/InStock",
+        "priceCurrency": "INR",
+        "seller": { "@type": "Organization", "name": "Asian Paints" }
+      }
+    } : {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Asian Paints Digital Fandeck",
+      "description": "Browse 2200+ Asian Paints shades interactively.",
+      "url": location.origin + location.pathname
+    };
+    ld.textContent = JSON.stringify(schema, null, 2);
+  }
+}
+
+function setMeta(name, content) {
+  let el = document.querySelector(`meta[name="${name}"]`);
+  if (!el) { el = document.createElement("meta"); el.name = name; document.head.appendChild(el); }
+  el.content = content;
+}
+
+function setOg(prop, content) {
+  let el = document.querySelector(`meta[property="${prop}"]`);
+  if (!el) { el = document.createElement("meta"); el.setAttribute("property", prop); document.head.appendChild(el); }
+  el.content = content;
+}
+
+function pushShadeUrl(shade) {
+  const url = shadeUrl(shade);
+  if (location.hash !== url) history.pushState({ shadeId: shade.id }, "", url);
+  updatePageMeta(shade);
+}
+
+function navigateToSlug(slug, { replace = false } = {}) {
+  const shade = findShadeBySlug(slug);
+  if (!shade) return false;
+
+  // Switch to the right family tab
+  const cat = shade.family || "All";
+  if (state.category !== cat) {
+    applyFilter(cat, { silent: true });
+  }
+
+  const idx = state.filtered.findIndex(s => s.id === shade.id);
+  if (idx !== -1) {
+    setSelectedIndex(idx, { source: "route" });
+  }
+  updatePageMeta(shade);
+  return true;
+}
+
+function handleRouteChange() {
+  const route = parseRoute();
+  if (route.type === "shade") {
+    navigateToSlug(route.slug);
+  } else {
+    updatePageMeta(null);
+  }
+}
+// ── End URL Router ───────────────────────────────────────────────────────────
+
+
 const state = {
   all: [],
   filtered: [],
@@ -81,10 +212,25 @@ async function init() {
   state.selectedId = state.filtered[0]?.id || null;
 
   buildCategoryTabs();
-  applyFilter("All", { silent: true });
+
+  // Handle deep-link on first load
+  const initRoute = parseRoute();
+  if (initRoute.type === "shade") {
+    // Navigate to specific shade from URL
+    applyFilter("All", { silent: true });
+    const found = navigateToSlug(initRoute.slug, { replace: true });
+    if (!found) applyFilter("All", { silent: true });
+  } else {
+    applyFilter("All", { silent: true });
+  }
+
+  // Listen for back/forward navigation
+  window.addEventListener("popstate", handleRouteChange);
+
   setupGsapIntro();
   setupDraggable();
   setLoading(false);
+  updatePageMeta(state.filtered[state.selectedIndex] || null);
 }
 
 function cacheDom() {
@@ -876,6 +1022,11 @@ function syncUi() {
     .attr("class", shadeShortlisted ? "ri-check-line" : "ri-add-line");
 
   dom.selectedBeacon.css({ color: textColor === "#ffffff" ? "#0f172a" : "#0f172a" });
+
+  // Update URL + page meta for this shade (skip during drag for perf)
+  if (!state.isDragging) {
+    pushShadeUrl(shade);
+  }
 }
 
 function openModal(shade, options = {}) {

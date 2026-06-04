@@ -412,6 +412,7 @@ button {
   font-size: clamp(1.55rem, 3.2vw, 3.25rem);
   line-height: 1.02;
   letter-spacing: normal;
+  font-size: 30px;
 }
 
 .hero-copy p {
@@ -548,7 +549,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   grid-template-columns: 250px minmax(0, 1fr) minmax(270px, 250px);
   gap: clamp(14px, 2vw, 18px);
   align-items: stretch;
-  min-height: clamp(500px, 62vw, 500px);
+  min-height: clamp(500px, 62vw, 480px);
   margin-top: 10px;
   grid-template-rows: 1fr auto;
 }
@@ -661,7 +662,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   background: var(--card-bg, #fff);
   overflow: visible;
   border-radius: 10px 10px 3px 3px;
-  box-shadow: 2px 0 8px rgba(15,23,42,0.18), -1px 0 4px rgba(15,23,42,0.08);
+  /* box-shadow: 2px 0 8px rgba(15,23,42,0.18), -1px 0 4px rgba(15,23,42,0.08); */
   transition:
     transform 0.22s var(--ease),
     filter 0.22s var(--ease),
@@ -672,7 +673,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
 .fan-card:hover,
 .fan-card.active {
   filter: saturate(1.12) contrast(1.02);
-  box-shadow: 0 24px 42px rgba(15, 23, 42, 0.23), 0 0 0 3px rgba(7, 93, 167, 0.2);
+  /* box-shadow: 0 24px 42px rgba(15, 23, 42, 0.23), 0 0 0 3px rgba(7, 93, 167, 0.2); */
   z-index: 9999 !important;
 }
 
@@ -1456,6 +1457,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
     z-index: 8;
     width: 50px;
     transform: translateY(-50%);
+    display: none;
   }
   .vertical-control span {
     font-size: 0.68rem;
@@ -3177,7 +3179,7 @@ body.modal-open {
   opacity: 1;
   color: #fff;
   background: linear-gradient(135deg, #075da7, #15a3df);
-  box-shadow: 0 8px 18px rgba(7, 93, 167, 0.26);
+  /* box-shadow: 0 8px 18px rgba(7, 93, 167, 0.26); */
 }
 
 .card-fav {
@@ -3653,7 +3655,7 @@ body {
 /* Keep the fan visually higher in the canvas so it feels more like a real deck. */
 .deck-section {
   margin-top: 0 !important;
-  min-height: clamp(500px, 58vw, 580px) !important;
+  min-height: clamp(500px, 58vw, 480px) !important;
 }
 
 .fan-stage {
@@ -4531,7 +4533,7 @@ body.modal-open {
     transition: background .3s, color .3s;
   }
 button.fan-card {
-    max-height: 325px !important;
+    max-height: 275px !important;
 }
 /* ── Fan stage wrapper: stacks fan + pill vertically ── */
 .fan-stage-wrap {

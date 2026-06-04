@@ -513,7 +513,7 @@ button {
   grid-template-columns: 90px minmax(0, 1fr) minmax(270px, 330px);
   gap: Clamp(14px, 2vw, 26px);
   align-items: stretch;
-  min-height: Clamp(520px, 62vw, 760px);
+  min-height: Clamp(500px, 62vw, 480px);
   margin-top: 10px;
 }
 
@@ -3683,7 +3683,7 @@ body {
 /* Keep the fan visually higher in the canvas so it feels more like a real deck. */
 .deck-section {
   margin-top: 0 !important;
-  min-height: Clamp(500px, 58vw, 720px) !important;
+  min-height: Clamp(500px, 58vw, 480px) !important;
 }
 .fan-stage {
   background:
