@@ -415,29 +415,18 @@ function bindEvents() {
 
   dom.clearSelection.on("click", clearSelectedPalette);
 
-  // GSAP-powered smooth lift on fan card hover
+  // Smooth hover lift via CSS custom properties — no GSAP conflict with rotate+translateY transform chain
   dom.fanDeck.on("mouseenter", ".fan-card", function () {
     if (state.isDragging) return;
-    const lift = parseFloat(this.style.getPropertyValue("--lift") || "0");
-    gsap.to(this, {
-      y: lift - 18,
-      scale: 1.05,
-      duration: 0.45,
-      ease: "back.out(1.4)",
-      overwrite: "auto"
-    });
+ if ($(this).hasClass("active")) return;
+    this.style.setProperty("--hover-lift", "-26px");
+    this.style.setProperty("--hover-scale", "1.06");
   });
 
   dom.fanDeck.on("mouseleave", ".fan-card", function () {
     if (state.isDragging) return;
-    const lift = parseFloat(this.style.getPropertyValue("--lift") || "0");
-    gsap.to(this, {
-      y: lift,
-      scale: 1,
-      duration: 0.55,
-      ease: "power3.out",
-      overwrite: "auto"
-    });
+    this.style.setProperty("--hover-lift", "0px");
+    this.style.setProperty("--hover-scale", "1");
   });
 
   $(document).on("keydown", event => {
@@ -782,7 +771,7 @@ function _fanInAnimation() {
       duration: 0.54,
       ease: "back.out(1.5)",
       delay,
-      clearProps: "scale"
+      clearProps: "scale,y"
     });
   });
 }
@@ -877,7 +866,9 @@ function renderDeck(options = {}) {
   const visibleCount = Math.min(maxCards, shades.length);
   const windowKey = deckWindowKey(shades, visibleCount);
   const { start, end } = computeDeckWindow(shades, visibleCount, windowKey);
-  const centerSlot = state.selectedIndex - start;
+  // centerSlot = visual middle of the rendered window so fan is always symmetric
+  // and highlighted card sits exactly at the centre regardless of list position.
+  const centerSlot = Math.floor((end - start) / 2);
   const maxSpread = window.matchMedia("(max-width: 820px)").matches ? 58 : 63;
   const gap = visibleCount > 1 ? Math.min(6.2, (maxSpread * 2) / Math.max(1, visibleCount - 1)) : 0;
 
@@ -926,7 +917,7 @@ function renderDeck(options = {}) {
           duration: 0.56,
           ease: "back.out(1.6)",
           delay,
-          clearProps: "scale"
+          clearProps: "scale,y"
         });
       });
     }
@@ -936,11 +927,11 @@ function renderDeck(options = {}) {
 function fanCardMarkup(shade, slot, context) {
   const { start, centerSlot, gap, selectedShade } = context;
   const rel = slot - centerSlot;
-  const angle = rel * gap;
   const isActive = shade.id === selectedShade?.id;
+  const angle = isActive ? 0 : rel * gap;
+  const lift = isActive ? -26 : Math.max(-9, -Math.abs(rel) * 0.16);
   const isFavorite = state.favorites.has(shade.id);
   const isShortlisted = isShadeShortlisted(shade);
-  const lift = isActive ? -38 : Math.max(-9, -Math.abs(rel) * 0.16);
   const z = 300 - Math.abs(rel);
   const tintA = shiftColor(shade.hex, 17, 6);
   const tintB = shiftColor(shade.hex, 10, 3);
@@ -965,11 +956,11 @@ function updateDeckCardStates({ shades, start, end, centerSlot, gap, selectedSha
     const shade = shades[start + slot];
     if (!shade) return;
     const rel = slot - centerSlot;
-    const angle = rel * gap;
     const isActive = shade.id === selectedShade?.id;
+    const angle = isActive ? 0 : rel * gap;
+    const lift = isActive ? -26 : Math.max(-9, -Math.abs(rel) * 0.16);
     const isFavorite = state.favorites.has(shade.id);
     const isShortlisted = isShadeShortlisted(shade);
-    const lift = isActive ? -38 : Math.max(-9, -Math.abs(rel) * 0.16);
     const z = 300 - Math.abs(rel);
 
     this.style.setProperty("--angle", `${angle.toFixed(3)}deg`);
@@ -987,8 +978,8 @@ function updateDeckCardStates({ shades, start, end, centerSlot, gap, selectedSha
 }
 
 function animateDeckSpin(animate = true) {
-  // Always set directly via style — no GSAP tween so drag can never override it
-  dom.fanDeck[0].style.setProperty("--deck-spin", "-55deg");
+  // Fan rotation is handled purely by per-card --angle CSS variables.
+  // No deck-level transform needed.
 }
 
 function deckWindowKey(shades, visibleCount) {
@@ -1604,9 +1595,6 @@ function setupDraggable() {
       lastX = this.x;
       hasDragged = false;
       dom.fanStage.addClass("dragging");
-      // Lock deck spin so GSAP drag cannot affect it
-      gsap.killTweensOf(dom.fanDeck[0], "--deck-spin");
-      dom.fanDeck[0].style.setProperty("--deck-spin", "-55deg");
     },
     onDrag() {
       const distance = this.x - lastX;
@@ -1614,17 +1602,12 @@ function setupDraggable() {
       const stepSize = 28;
       const next = startIndex - Math.round(distance / stepSize);
       setSelectedIndex(next, { source: "drag" });
-      // Re-lock spin every step — prevent any drift
-      dom.fanDeck[0].style.setProperty("--deck-spin", "-55deg");
     },
     onRelease() {
       state.isDragging = false;
       dom.fanStage.removeClass("dragging");
       if (hasDragged) state.suppressFanClickUntil = Date.now() + 260;
       gsap.set(proxy, { x: 0 });
-      // Always snap deck back to fixed position after drag
-      gsap.killTweensOf(dom.fanDeck[0], "--deck-spin");
-      gsap.set(dom.fanDeck[0], { "--deck-spin": "-55deg" });
     }
   })[0];
 }
@@ -1674,7 +1657,6 @@ function setupNativeSwipeBrowsing() {
     if (!state.swipeFrame) {
       state.swipeFrame = requestAnimationFrame(() => {
         setSelectedIndex(state.swipePendingIndex, { source: "touch-swipe" });
-        dom.fanDeck[0].style.setProperty("--deck-spin", "-55deg");
         state.swipeFrame = null;
       });
     }
@@ -1687,13 +1669,6 @@ function setupNativeSwipeBrowsing() {
     horizontal = false;
     state.isDragging = false;
     dom.fanStage.removeClass("dragging");
-    // Always snap deck back to fixed spin after swipe
-    if (window.gsap) {
-      gsap.killTweensOf(dom.fanDeck[0], "--deck-spin");
-      gsap.set(dom.fanDeck[0], { "--deck-spin": "-55deg" });
-    } else {
-      dom.fanDeck.css("--deck-spin", "-55deg");
-    }
     if (pointerId !== null && pointerId !== undefined && stage.releasePointerCapture) {
       try { stage.releasePointerCapture(pointerId); } catch (_) {}
     }
@@ -1744,7 +1719,11 @@ function shouldSuppressFanClick() {
 
 function pulseDeck() {
   if (!window.gsap) return;
-  gsap.fromTo(dom.fanDeck[0], { scale: .97 }, { scale: 1, duration: .55, ease: "elastic.out(1, .6)" });
+  // Animate cards instead of the deck wrapper to avoid overwriting the
+  // CSS `transform: rotate(var(--deck-spin))` on #fanDeck.
+  const cards = dom.fanDeck.find(".fan-card").toArray();
+  if (!cards.length) return;
+  gsap.fromTo(cards, { scale: 0.97 }, { scale: 1, duration: 0.55, ease: "elastic.out(1, .6)", stagger: 0.01, clearProps: "scale" });
 }
 
 function setLoading(isLoading) {

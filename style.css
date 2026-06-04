@@ -638,13 +638,11 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
 }
 
 .fan-deck {
-  --deck-spin: 0deg;
   position: absolute;
   left: 50%;
   bottom: 14px;
   width: 1px;
   height: 1px;
-  transform: rotate(var(--deck-spin));
   transform-origin: 50% 50%;
   will-change: transform;
 }
@@ -656,39 +654,44 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   width: var(--deck-card-width);
   height: var(--deck-card-height);
   transform-origin: 50% calc(100% + var(--deck-origin));
-  transform: translateX(-50%) rotate(var(--angle)) translateY(var(--lift, 0px)) translateY(var(--hover-extra, 0px)) scale(var(--hover-scale, 1));
+  transform: translateX(-50%) rotate(var(--angle)) translateY(var(--lift, 0px)) translateY(var(--hover-lift, 0px)) scale(var(--hover-scale, 1));
   border: 0;
   padding: 0;
   background: var(--card-bg, #fff);
   overflow: visible;
   border-radius: 10px 10px 3px 3px;
-  box-shadow: 2px 0 8px rgba(15,23,42,0.18), -1px 0 4px rgba(15,23,42,0.08);
   transition:
-    transform 0.42s cubic-bezier(0.34, 1.26, 0.64, 1),
-    filter 0.32s cubic-bezier(0.25, 0.8, 0.25, 1),
-    box-shadow 0.42s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.75s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
   cursor: pointer;
 }
 
 .fan-card:hover {
-  --hover-extra: -14px;
-  --hover-scale: 1.045;
-  filter: saturate(1.18) contrast(1.03) brightness(1.02);
+  --hover-lift: -22px;
+  --hover-scale: 1.055;
+  filter: saturate(1.22) contrast(1.04) brightness(1.03);
   box-shadow:
-    0 22px 44px rgba(15, 23, 42, 0.22),
-    0 6px 16px rgba(15, 23, 42, 0.12),
-    0 0 0 2px rgba(7, 93, 167, 0.18);
+    0 28px 52px rgba(15, 23, 42, 0.26),
+    0 8px 20px rgba(15, 23, 42, 0.14),
+    0 0 0 2px rgba(7, 93, 167, 0.2);
   z-index: 9999 !important;
 }
 
 .fan-card:hover,
 .fan-card.active {
   filter: saturate(1.12) contrast(1.02);
-  /* box-shadow: 0 24px 42px rgba(15, 23, 42, 0.23), 0 0 0 3px rgba(7, 93, 167, 0.2); */
+    box-shadow: none !important;
   z-index: 9999 !important;
 }
 
+.fan-card.active:hover {
+  --hover-lift: 0px;
+  --hover-scale: 1;
+  filter: saturate(1.12) contrast(1.02);
+  box-shadow: none !important
+}
 .card-label-area {
   position: absolute;
   bottom: 18px;
@@ -859,7 +862,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
 
 .insight-card {
   align-self: start;
-  min-height: 500px;
+  min-height: 400px;
   padding: 18px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.75);
@@ -882,7 +885,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
 
 .preview-wall {
   position: relative;
-  height: 235px;
+  height: 180px;
   margin: 18px 0 16px;
   overflow: hidden;
   background: var(--preview-color, #dbeafe);
@@ -3666,7 +3669,7 @@ body {
 /* Keep the fan visually higher in the canvas so it feels more like a real deck. */
 .deck-section {
   margin-top: 0 !important;
-  min-height: clamp(500px, 58vw, 480px) !important;
+  min-height: clamp(400px, 58vw, 400px) !important;
 }
 
 .fan-stage {
@@ -4066,12 +4069,12 @@ body.modal-open {
 }
 
 .fan-stage {
-  min-height: clamp(500px, 61vw, 500px) !important;
+  min-height: clamp(480px, 61vw, 480px) !important;
   border-radius: 12px;
 }
 
 .fan-deck {
-  bottom: clamp(112px, 5.4vw, 144px) !important;
+  bottom: clamp(85px, 5.4vw, 144px) !important;
 }
 
 .deck-shadow {
@@ -4565,7 +4568,6 @@ button.fan-card {
       display: flex;
     align-items: center;
     gap: 0;
-    backdrop-filter: blur(12px);
     border-radius: 999px;
     padding: 3px 4px;
     user-select: none;
