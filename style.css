@@ -271,8 +271,8 @@ button {
 }
 
 .icon-btn {
-  width: 42px;
-  height: 42px;
+  width: 30px;
+  height: 30px;
   display: inline-grid;
   place-items: center;
   border-radius: 999px;
@@ -661,9 +661,9 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   overflow: visible;
   border-radius: 10px 10px 3px 3px;
   transition:
-    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  transform 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+filter 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
   cursor: pointer;
 }
@@ -715,7 +715,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   max-height: 60px;
   background-color: #fff;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 15px;
 }
 
 .fan-card.active::after {
@@ -887,7 +887,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
 .preview-wall {
   position: relative;
   height: 180px;
-  margin: 18px 0 16px;
+  margin: 10px 0 16px;
   overflow: hidden;
   background: var(--preview-color, #dbeafe);
   transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -961,6 +961,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   font-size: clamp(1.25rem, 2vw, 1.75rem);
   letter-spacing: -0.05em;
   text-transform: capitalize;
+  font-size: 22px;
 }
 
 .insight-card p {

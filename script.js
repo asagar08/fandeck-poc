@@ -362,6 +362,7 @@ function bindEvents() {
   });
 
   dom.fanDeck.on("click", ".fan-card", function (event) {
+    console.log("suppress:", shouldSuppressFanClick());
     if (shouldSuppressFanClick()) {
       event.preventDefault();
       return;
@@ -419,8 +420,8 @@ function bindEvents() {
   dom.fanDeck.on("mouseenter", ".fan-card", function () {
     if (state.isDragging) return;
  if ($(this).hasClass("active")) return;
-    this.style.setProperty("--hover-lift", "-26px");
-    this.style.setProperty("--hover-scale", "1.06");
+   this.style.setProperty("--hover-lift", "-8px");
+this.style.setProperty("--hover-scale", "1.02");
   });
 
   dom.fanDeck.on("mouseleave", ".fan-card", function () {
