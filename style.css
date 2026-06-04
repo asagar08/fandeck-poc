@@ -676,13 +676,16 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
     0 28px 52px rgba(15, 23, 42, 0.26),
     0 8px 20px rgba(15, 23, 42, 0.14),
     0 0 0 2px rgba(7, 93, 167, 0.2);
-  z-index: 9999 !important;
 }
 
-.fan-card:hover,
+.fan-card:hover {
+  filter: saturate(1.12) contrast(1.02);
+  box-shadow: none !important;
+}
+
 .fan-card.active {
   filter: saturate(1.12) contrast(1.02);
-    box-shadow: none !important;
+  box-shadow: none !important;
   z-index: 9999 !important;
 }
 

@@ -420,8 +420,8 @@ function bindEvents() {
   dom.fanDeck.on("mouseenter", ".fan-card", function () {
     if (state.isDragging) return;
  if ($(this).hasClass("active")) return;
-   this.style.setProperty("--hover-lift", "-8px");
-this.style.setProperty("--hover-scale", "1.02");
+  this.style.setProperty("--hover-lift", "-35px");
+  this.style.setProperty("--hover-scale", "1");
   });
 
   dom.fanDeck.on("mouseleave", ".fan-card", function () {
