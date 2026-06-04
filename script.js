@@ -316,6 +316,15 @@ function bindEvents() {
     openModal(getSelectedShade());
   });
 
+document.getElementById('categoryTabs').addEventListener('wheel', function(e) {
+  const delta = e.deltaY || e.deltaX || 0;
+  if (Math.abs(delta) < 2) return;
+  if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
+    e.preventDefault();
+    this.scrollLeft += delta;
+  }
+}, { passive: false });
+
   dom.progressTrack.on("click", function (event) {
     const rect = this.getBoundingClientRect();
     const ratio = clamp((event.clientX - rect.left) / rect.width, 0, 1);
@@ -700,6 +709,17 @@ function buildCategoryTabs() {
   dom.tabs.html(tabs);
   dom.tabs.off("click", ".tab").on("click", ".tab", function () {
     applyFilter($(this).data("family"));
+  });
+
+   // FIX: Mouse wheel se tabs horizontally scroll hongi
+  dom.tabs.off("wheel.tabScroll").on("wheel.tabScroll", function (event) {
+    const e = event.originalEvent;
+    const delta = e.deltaY || e.deltaX || 0;
+    if (Math.abs(delta) < 2) return;
+    if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
+      event.preventDefault();
+      this.scrollLeft += delta;
+    }
   });
 }
 
@@ -1566,7 +1586,7 @@ function setupDraggable() {
     state.dragProxy = null;
   }
 
-  dom.fanStage.off(".swipeBrowse");
+dom.fanStage.off(".swipeBrowse").off("wheel.fanBrowse");
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
 
   if (isTouchDevice) {
@@ -1574,10 +1594,19 @@ function setupDraggable() {
     return;
   }
 
-  if (!window.gsap || !window.Draggable) {
+if (!window.gsap || !window.Draggable) {
     setupNativeSwipeBrowsing();
     return;
   }
+
+  // FIX: Mouse wheel se fan deck browse hoga
+  dom.fanStage.off("wheel.fanBrowse").on("wheel.fanBrowse", function (event) {
+    event.preventDefault();
+    const e = event.originalEvent;
+    const delta = e.deltaY || e.deltaX || 0;
+    if (Math.abs(delta) < 2) return;
+    stepShade(delta > 0 ? 1 : -1);
+  });
 
   const proxy = document.createElement("div");
   let startIndex = 0;
