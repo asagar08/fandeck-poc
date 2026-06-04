@@ -703,9 +703,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
 }
 
 .card-shade-code {
-  writing-mode: vertical-rl;
   text-orientation: mixed;
-  transform: rotate(180deg);
   font-size: clamp(0.48rem, 0.72vw, 0.64rem);
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -715,6 +713,9 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: 60px;
+  background-color: #fff;
+  padding: 3px 8px;
+  border-radius: 4px;
 }
 
 .fan-card.active::after {
