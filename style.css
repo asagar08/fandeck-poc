@@ -656,18 +656,30 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   width: var(--deck-card-width);
   height: var(--deck-card-height);
   transform-origin: 50% calc(100% + var(--deck-origin));
-  transform: translateX(-50%) rotate(var(--angle)) translateY(var(--lift, 0px));
+  transform: translateX(-50%) rotate(var(--angle)) translateY(var(--lift, 0px)) translateY(var(--hover-extra, 0px)) scale(var(--hover-scale, 1));
   border: 0;
   padding: 0;
   background: var(--card-bg, #fff);
   overflow: visible;
   border-radius: 10px 10px 3px 3px;
-  /* box-shadow: 2px 0 8px rgba(15,23,42,0.18), -1px 0 4px rgba(15,23,42,0.08); */
+  box-shadow: 2px 0 8px rgba(15,23,42,0.18), -1px 0 4px rgba(15,23,42,0.08);
   transition:
-    transform 0.22s var(--ease),
-    filter 0.22s var(--ease),
-    box-shadow 0.22s var(--ease);
+    transform 0.42s cubic-bezier(0.34, 1.26, 0.64, 1),
+    filter 0.32s cubic-bezier(0.25, 0.8, 0.25, 1),
+    box-shadow 0.42s cubic-bezier(0.25, 0.8, 0.25, 1);
   will-change: transform;
+  cursor: pointer;
+}
+
+.fan-card:hover {
+  --hover-extra: -14px;
+  --hover-scale: 1.045;
+  filter: saturate(1.18) contrast(1.03) brightness(1.02);
+  box-shadow:
+    0 22px 44px rgba(15, 23, 42, 0.22),
+    0 6px 16px rgba(15, 23, 42, 0.12),
+    0 0 0 2px rgba(7, 93, 167, 0.18);
+  z-index: 9999 !important;
 }
 
 .fan-card:hover,
@@ -706,7 +718,6 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   content: "";
   position: absolute;
   inset: 0;
-  border: 3px solid rgba(7, 93, 167, 0.62);
   border-radius: inherit;
   pointer-events: none;
 }

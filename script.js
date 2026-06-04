@@ -324,7 +324,14 @@ function bindEvents() {
 
   // Header CTA is the only entry point for the Colour Selection popup.
   dom.openDetails.on("click", openSelectionModal);
-  dom.selectedBeacon.on("click", () => openModal(getSelectedShade()));
+  dom.selectedBeacon.on("click", () => {
+    const shade = getSelectedShade();
+    if (shade && shade.sourceUrl) {
+      window.open(shade.sourceUrl, "_blank", "noopener,noreferrer");
+    } else {
+      openModal(shade);
+    }
+  });
   dom.closeModal.on("click", closeModal);
   dom.closeSelectionModal.on("click", closeSelectionModal);
   dom.overlay.on("click", event => {
@@ -407,6 +414,31 @@ function bindEvents() {
   });
 
   dom.clearSelection.on("click", clearSelectedPalette);
+
+  // GSAP-powered smooth lift on fan card hover
+  dom.fanDeck.on("mouseenter", ".fan-card", function () {
+    if (state.isDragging) return;
+    const lift = parseFloat(this.style.getPropertyValue("--lift") || "0");
+    gsap.to(this, {
+      y: lift - 18,
+      scale: 1.05,
+      duration: 0.45,
+      ease: "back.out(1.4)",
+      overwrite: "auto"
+    });
+  });
+
+  dom.fanDeck.on("mouseleave", ".fan-card", function () {
+    if (state.isDragging) return;
+    const lift = parseFloat(this.style.getPropertyValue("--lift") || "0");
+    gsap.to(this, {
+      y: lift,
+      scale: 1,
+      duration: 0.55,
+      ease: "power3.out",
+      overwrite: "auto"
+    });
+  });
 
   $(document).on("keydown", event => {
     const isTyping = ["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName);
@@ -1022,6 +1054,13 @@ function syncUi() {
     .attr("class", shadeShortlisted ? "ri-check-line" : "ri-add-line");
 
   dom.selectedBeacon.css({ color: textColor === "#ffffff" ? "#0f172a" : "#0f172a" });
+  // Show external link icon if shade has an Asian Paints page URL
+  dom.selectedBeacon.find("i").attr("class",
+    shade.sourceUrl ? "ri-external-link-line" : "ri-arrow-right-up-line"
+  );
+  dom.selectedBeacon.attr("title",
+    shade.sourceUrl ? `View ${shade.name} on AsianPaints.com` : "Open shade details"
+  );
 
   // Update URL + page meta for this shade (skip during drag for perf)
   if (!state.isDragging) {
