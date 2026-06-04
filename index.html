@@ -102,6 +102,7 @@
       </aside>
 
 
+      <div class="fan-stage-wrap">
       <div id="fanStage" class="fan-stage" tabindex="0" aria-label="Fan deck. Drag or use arrow keys to browse shades.">
         <div class="deck-shadow"></div>
         <div id="fanDeck" class="fan-deck" aria-live="polite"></div>
@@ -133,7 +134,7 @@
   
   </div>
 </div> -->
-        <div class="card range-speadometer-model hidden-sm">
+        <div class="card range-speadometer-model hidden-sm" style="display: none !important;">
           <input type="range" id="rangeSlider" min="0" max="100" value="50" step="1" aria-label="Speed"
             style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;">
           <!-- Arc SVG -->
@@ -174,6 +175,12 @@
 
         </div>
 
+      </div>
+      <div class="fan-nav-pill">
+        <button id="prevShade" class="fan-nav-arrow" type="button" aria-label="Previous shade"><i class="ri-arrow-left-s-line"></i></button>
+        <span id="rangeCountPill" class="fan-nav-count">1 / 2200</span>
+        <button id="nextShade" class="fan-nav-arrow" type="button" aria-label="Next shade"><i class="ri-arrow-right-s-line"></i></button>
+      </div>
       </div>
       <aside class="insight-card" aria-label="Selected colour summary">
         <div class="insight-head">

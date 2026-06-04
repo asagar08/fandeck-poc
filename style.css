@@ -15,7 +15,7 @@
   --radius: 28px;
   --deck-card-width: Clamp(76px, 6.4vw, 116px);
   --deck-card-height: Clamp(280px, 42vw, 470px);
-  --deck-origin: Clamp(170px, 29vw, 360px);
+  --deck-origin: Clamp(8px, 1.2vw, 18px);
   --ease: cubic-bezier(0.2, 0.85, 0.25, 1);
 }
 
@@ -640,7 +640,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   --deck-spin: 0deg;
   position: absolute;
   left: 50%;
-  bottom: 54px;
+  bottom: 14px;
   width: 1px;
   height: 1px;
   transform: rotate(var(--deck-spin));
@@ -659,7 +659,9 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   border: 0;
   padding: 0;
   background: var(--card-bg, #fff);
-  overflow: hidden;
+  overflow: visible;
+  border-radius: 10px 10px 3px 3px;
+  box-shadow: 2px 0 8px rgba(15,23,42,0.18), -1px 0 4px rgba(15,23,42,0.08);
   transition:
     transform 0.22s var(--ease),
     filter 0.22s var(--ease),
@@ -671,6 +673,32 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
 .fan-card.active {
   filter: saturate(1.12) contrast(1.02);
   box-shadow: 0 24px 42px rgba(15, 23, 42, 0.23), 0 0 0 3px rgba(7, 93, 167, 0.2);
+  z-index: 9999 !important;
+}
+
+.card-label-area {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-shade-code {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-size: clamp(0.48rem, 0.72vw, 0.64rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: rgba(15, 23, 42, 0.55);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 60px;
 }
 
 .fan-card.active::after {
@@ -1348,7 +1376,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   :root {
     --deck-card-width: Clamp(54px, 12vw, 78px);
     --deck-card-height: Clamp(245px, 78vw, 360px);
-    --deck-origin: Clamp(170px, 48vw, 270px);
+    --deck-origin: Clamp(6px, 1vw, 14px);
   }
   .topbar {
     grid-template-columns: 1fr 48px;
@@ -3633,7 +3661,7 @@ body {
 }
 
 .fan-deck {
-  bottom: clamp(84px, 7.3vw, 112px) !important;
+  bottom: clamp(84px, 5.4vw, 112px) !important;
 }
 
 .deck-shadow {
@@ -4030,7 +4058,7 @@ body.modal-open {
 }
 
 .fan-deck {
-  bottom: clamp(112px, 8.4vw, 144px) !important;
+  bottom: clamp(112px, 5.4vw, 144px) !important;
 }
 
 .deck-shadow {
@@ -4504,6 +4532,61 @@ body.modal-open {
   }
 button.fan-card {
     max-height: 325px !important;
-        border-bottom: 1px solid #000;
-    border-top: 1px solid #000 !important;
+}
+/* ── Fan stage wrapper: stacks fan + pill vertically ── */
+.fan-stage-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+}
+
+.fan-stage-wrap .fan-stage {
+  width: 100%;
+  flex: 1;
+}
+
+/* ── Fan nav pill: < 1/2 > directly below fan stage ── */
+.fan-nav-pill {
+      display: flex;
+    align-items: center;
+    gap: 0;
+    backdrop-filter: blur(12px);
+    border-radius: 999px;
+    padding: 3px 4px;
+    user-select: none;
+    margin-top: 10px;
+    position: absolute;
+    bottom: 20px;
+}
+
+.fan-nav-arrow {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+
+.fan-nav-arrow:hover {
+  background: rgba(15,23,42,0.07);
+  color: var(--brand);
+}
+
+.fan-nav-count {
+  min-width: 48px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  padding: 0 4px;
 }
