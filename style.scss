@@ -25,24 +25,25 @@
 
 html {
   scroll-behavior: smooth;
-   background: #f0f4fb;
+  background: #f0f4fb;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: 'Manrope', sans-serif;
+  font-family: "Manrope", sans-serif;
   color: var(--ink);
   background: radial-gradient(circle at 17% 15%, rgba(237, 28, 36, 0.1), transparent 30%), radial-gradient(circle at 80% 12%, rgba(111, 45, 168, 0.12), transparent 28%), linear-gradient(135deg, #fbfcff 0%, #edf4fb 52%, #f8fbff 100%);
   overflow-x: hidden;
-   opacity: 0;
-   background-color: #edf4fb;
+  opacity: 0;
+  background-color: #edf4fb;
   transition: opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body.ap-ready {
   opacity: 1;
 }
+
 .app-shell, .topbar {
   opacity: 0;
   transition: opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1);
@@ -162,14 +163,16 @@ button {
   line-height: 1;
   justify-items: center;
 }
-.brand-copy picture{
+
+.brand-copy picture {
   width: 160px;
   height: 31px;
   cursor: pointer;
 }
-.brand-copy picture img{
-    width: 100%;
-    height: auto;
+
+.brand-copy picture img {
+  width: 100%;
+  height: auto;
 }
 
 .brand-copy strong {
@@ -514,27 +517,28 @@ button {
   font-weight: 800;
   transition: transform 0.22s var(--ease), background 0.22s var(--ease);
 } */
-
 .pill-action {
-    padding: 16px 20px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
+
 #randomShade {
-background: linear-gradient(135deg, #00c6ff, #0072ff);
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
 }
+
 #toggleFavorites {
-background: linear-gradient(135deg, #ff6a00, #ee0979);
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
 }
+
 .pill-action:hover {
   /* transform: translateY(-2px);
   background: #fff; */
-   box-shadow: 0 0 12px rgba(0, 0, 0, 0.3),
-              0 0 20px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
 }
 
@@ -591,8 +595,8 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   height: min(440px, 51vh);
   padding: 14px 0;
   border-radius: 999px;
-   accent-color: var(--brand);
-  background: transparent; 
+  accent-color: var(--brand);
+  background: transparent;
   box-shadow: none;
 }
 
@@ -660,10 +664,7 @@ background: linear-gradient(135deg, #ff6a00, #ee0979);
   background: var(--card-bg, #fff);
   overflow: visible;
   border-radius: 10px 10px 3px 3px;
-  transition:
-  transform 1.6s cubic-bezier(0.16, 1, 0.3, 1),
-filter 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1), filter 1.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
   cursor: pointer;
 }
@@ -672,10 +673,7 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   --hover-lift: -22px;
   --hover-scale: 1.055;
   filter: saturate(1.22) contrast(1.04) brightness(1.03);
-  box-shadow:
-    0 28px 52px rgba(15, 23, 42, 0.26),
-    0 8px 20px rgba(15, 23, 42, 0.14),
-    0 0 0 2px rgba(7, 93, 167, 0.2);
+  box-shadow: 0 28px 52px rgba(15, 23, 42, 0.26), 0 8px 20px rgba(15, 23, 42, 0.14), 0 0 0 2px rgba(7, 93, 167, 0.2);
 }
 
 .fan-card:hover {
@@ -693,8 +691,9 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   --hover-lift: 0px;
   --hover-scale: 1;
   filter: saturate(1.12) contrast(1.02);
-  box-shadow: none !important
+  box-shadow: none !important;
 }
+
 .card-label-area {
   position: absolute;
   bottom: 18px;
@@ -711,7 +710,7 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   font-weight: 800;
   letter-spacing: 0.04em;
   color: rgba(15, 23, 42, 0.55);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -773,21 +772,22 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-fav {
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    border-radius: 999px;
-    color: rgba(15, 23, 42, 0.5);
-    background: #fff;
-    opacity: 0;
-    transition: opacity 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
-    transform: translateX(-50%);
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: rgba(15, 23, 42, 0.5);
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
+  transform: translateX(-50%);
 }
-.fan-card .card-fav .ri-add-line::before{
+
+.fan-card .card-fav .ri-add-line::before {
   color: #000;
 }
 
@@ -803,35 +803,34 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .selected-beacon {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    z-index: 6;
-    width: 100%;
-    height: 70px;
-    min-height: 70px;
-    max-height: 70px;
-    display: grid;
-    grid-template-columns: 48px 1fr 38px;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 14px;
-    border-radius: 12px 12px 0 0;
-    background: rgba(255, 255, 255, 0.84);
-    color: var(--ink);
-    text-align: left;
-    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
-    backdrop-filter: blur(16px);
-    transition: transform 0.22s var(--ease), background 0.22s var(--ease);
-    text-transform: capitalize;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 6;
+  width: 100%;
+  height: 70px;
+  min-height: 70px;
+  max-height: 70px;
+  display: grid;
+  grid-template-columns: 48px 1fr 38px;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px 12px 0 0;
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(16px);
+  transition: transform 0.22s var(--ease), background 0.22s var(--ease);
+  text-transform: capitalize;
 }
 
 /* .selected-beacon:hover {
   transform: translateX(-50%) translateY(-2px);
   background: #fff;
 } */
-
 .beacon-swatch {
   width: 48px;
   height: 48px;
@@ -911,7 +910,7 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   border-radius: 8px;
   background: linear-gradient(135deg, rgba(7, 93, 167, 0.45), rgba(249, 115, 22, 0.42));
   box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
-  display:none
+  display: none;
 }
 
 .preview-sofa {
@@ -923,7 +922,7 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   border-radius: 22px 22px 12px 12px;
   background: rgba(255, 255, 255, 0.82);
   box-shadow: 0 15px 28px rgba(15, 23, 42, 0.12);
-  display:none;
+  display: none;
 }
 
 .preview-sofa::before,
@@ -952,7 +951,7 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   bottom: 0;
   height: 42px;
   background: linear-gradient(90deg, rgba(15, 23, 42, 0.1), rgba(255, 255, 255, 0.35));
-  display:none;
+  display: none;
 }
 
 .insight-card h2 {
@@ -1080,17 +1079,17 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .palette-tray {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 18px;
-    margin: 22px auto 0 115px;
-    padding: 14px 18px;
-    width: min(987px, 100%);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.58);
-    /* border: 1px solid rgba(255, 255, 255, 0.72); */
-    box-shadow: var(--shadow-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin: 22px auto 0 115px;
+  padding: 14px 18px;
+  width: min(987px, 100%);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.58);
+  /* border: 1px solid rgba(255, 255, 255, 0.72); */
+  box-shadow: var(--shadow-soft);
 }
 
 .palette-tray strong {
@@ -1198,7 +1197,6 @@ box-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   border-radius: 28px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.65)), repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.36) 0 12px, rgba(255, 255, 255, 0.08) 12px 24px);
   box-shadow: 0 18px 34px rgba(15, 23, 42, 0.16);
-
   display: none;
 }
 
@@ -2711,7 +2709,7 @@ body.modal-open {
 .palette-tile,
 .palette-tile.featured,
 .palette-tile.wide {
-   display: flex;
+  display: flex;
   flex-direction: column; /* vertical stacking */
   justify-content: space-between; /* first span top, second span bottom */
   grid-column: auto !important;
@@ -2775,7 +2773,6 @@ body.modal-open {
   color: inherit !important;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.32) !important;
   font-size: 0 !important;
-
 }
 
 .palette-tile .tile-save i {
@@ -3680,7 +3677,6 @@ body {
 /* .selected-beacon {
   bottom: 30px !important;
 } */
-
 /* Text in the top card cap should sit in the centre instead of drifting right. */
 .card-cap {
   display: grid !important;
@@ -4077,7 +4073,6 @@ body.modal-open {
 /* .selected-beacon {
   bottom: 36px !important;
 } */
-
 .bottom-console {
   width: min(1020px, 100% - 44px) !important;
   margin: 24px auto 0 !important;
@@ -4094,7 +4089,6 @@ body.modal-open {
 /* .palette-tray {
   margin-top: 22px !important;
 } */
-
 /* Make palette swatch names readable without turning the tile into a text block. */
 .palette-tile .tile-name {
   text-transform: none !important;
@@ -4334,12 +4328,12 @@ body.modal-open {
     font-size: 0.88rem !important;
   }
 }
-
 .vertical-control {
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-soft);
   border-radius: 999px;
 }
+
 #rangeSlider {
   appearance: slider-vertical;
   writing-mode: vertical-rl;
@@ -4348,200 +4342,208 @@ body.modal-open {
   height: 160px;
   border-radius: 999px;
   accent-color: var(--brand);
-  background: transparent; 
+  background: transparent;
   box-shadow: none;
 }
 
-/*# sourceMappingURL=style.css.map */
 
+.vertical-control-upd input {
+  -webkit-appearance: none;
+  width: 400px;
+  height: 4px;
+  border-radius: 5px;
+  background-color: #ba3950;
+  outline: none;
+}
 
-.vertical-control-upd input{
-	-webkit-appearance:none;
-	width:400px;
-	height:4px;
-	border-radius:5px;
-	background-color:#ba3950;
-	outline:none;
+.vertical-control-upd input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #a83348;
 }
-.vertical-control-upd input::-webkit-slider-thumb{
-	-webkit-appearance:none;
-	width:20px;
-	height:20px;
-	border-radius:50%;
-	background-color:#a83348;
-}
+
 .vertical-control-upd span {
-    position: absolute;
-    margin-left: 14px;
-    width: 80px;
-    max-height: 50px;
-    background-color: #222;
-    color: #fff;
-    border-radius: 3px;
-    text-align: center;
-    line-height: 30px;
-    font-size: 12px;
-    bottom: -60px;
-    left: -29px;
+  position: absolute;
+  margin-left: 14px;
+  width: 80px;
+  max-height: 50px;
+  background-color: #222;
+  color: #fff;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 30px;
+  font-size: 12px;
+  bottom: -60px;
+  left: -29px;
 }
-.vertical-control-upd span:before{
-	content:'';
-	position:absolute;
-	border-top:9px solid transparent;
-	border-bottom:9px solid transparent;
-	border-left:12px solid #222;
-	left: 25px;
+
+.vertical-control-upd span:before {
+  content: "";
+  position: absolute;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-left: 12px solid #222;
+  left: 25px;
   top: -4px;
-	transform:translateY(-50%) rotate(-90deg);
+  transform: translateY(-50%) rotate(-90deg);
 }
-
-
 
 @media (min-width: 1025px) {
   .mob-visible {
-    display: none ;
+    display: none;
   }
 }
 @media (max-width: 1024px) {
   .hidden-sm {
-    display: none !important ;
+    display: none !important;
   }
   .palette-tray {
     margin-left: 0;
   }
 }
-
 .vertical-control-color {
-    position: relative;
-    align-self: start;
-    justify-self: center;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 0px;
+  position: relative;
+  align-self: start;
+  justify-self: center;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0px;
 }
 
-
-.vertical-control-color   .palette-tray {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    flex-direction: column;
-    margin: 0 !important;
-    padding: 18px !important;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.58);
-    border: 1px solid rgba(255, 255, 255, 0.72);
-    box-shadow: var(--shadow-soft);
+.vertical-control-color .palette-tray {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  margin: 0 !important;
+  padding: 18px !important;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: var(--shadow-soft);
 }
 
- .range-speadometer-model {
-    border: 0.5px solid var(--border);
-    width: 100%;
-    max-width: 300px;
-    position: absolute;
-    bottom: -64px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+.range-speadometer-model {
+  border: 0.5px solid var(--border);
+  width: 100%;
+  max-width: 300px;
+  position: absolute;
+  bottom: -64px;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
-  /* ── Arc ── */
- .range-speadometer-model .arc-wrap {
-    position: relative;
-    width: 100%;
-    user-select: none;
-    touch-action: pan-y;
-    margin-bottom: .5rem;
-  }
-  .range-speadometer-model .arc-wrap svg {
-    width: 100%;
-    overflow: visible;
-  }
+/* ── Arc ── */
+.range-speadometer-model .arc-wrap {
+  position: relative;
+  width: 100%;
+  user-select: none;
+  touch-action: pan-y;
+  margin-bottom: 0.5rem;
+}
 
-  /* ── Center value ── */
-  .range-speadometer-model .center-val {
-    position: absolute;
-    left: 50%;
-    bottom: 74px;
-    transform: translateX(-50%);
-    text-align: center;
-    pointer-events: none;
-  }
-   .range-speadometer-model .cv-big {
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1;
-  }
-   .range-speadometer-model .cv-sub {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
+.range-speadometer-model .arc-wrap svg {
+  width: 100%;
+  overflow: visible;
+}
 
-  /* ── Edge labels ── */
-   .range-speadometer-model .edge-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--muted);
-    padding: 0 2px;
-    margin-bottom: 1.5rem;
-  }
+/* ── Center value ── */
+.range-speadometer-model .center-val {
+  position: absolute;
+  left: 50%;
+  bottom: 74px;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
 
-  /* ── Section card ── */
-   .range-speadometer-model .section-card {
-    background: var(--bg2);
-    border-radius: var(--radius-md);
-    padding: 1.25rem;
-    border: 0.5px solid var(--border);
-    transition: border-color .3s;
-  }
-   .range-speadometer-model .sec-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: .75rem;
-  }
-   .range-speadometer-model .sec-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-    transition: background .3s;
-  }
-   .range-speadometer-model .sec-title {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-  }
-   .range-speadometer-model .sec-desc {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.65;
-  }
-  .range-speadometer-model  .sec-tags {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: .9rem;
-  }
-   .range-speadometer-model .tag {
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-weight: 500;
-    transition: background .3s, color .3s;
-  }
+.range-speadometer-model .cv-big {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1;
+}
+
+.range-speadometer-model .cv-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── Edge labels ── */
+.range-speadometer-model .edge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  padding: 0 2px;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Section card ── */
+.range-speadometer-model .section-card {
+  background: var(--bg2);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  border: 0.5px solid var(--border);
+  transition: border-color 0.3s;
+}
+
+.range-speadometer-model .sec-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.range-speadometer-model .sec-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+.range-speadometer-model .sec-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.range-speadometer-model .sec-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.range-speadometer-model .sec-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+}
+
+.range-speadometer-model .tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: background 0.3s, color 0.3s;
+}
+
 button.fan-card {
-    max-height: 275px !important;
+  max-height: 275px !important;
 }
+
 /* ── Fan stage wrapper: stacks fan + pill vertically ── */
 .fan-stage-wrap {
   display: flex;
@@ -4558,15 +4560,15 @@ button.fan-card {
 
 /* ── Fan nav pill: < 1/2 > directly below fan stage ── */
 .fan-nav-pill {
-      display: flex;
-    align-items: center;
-    gap: 0;
-    border-radius: 999px;
-    padding: 3px 4px;
-    user-select: none;
-    margin-top: 10px;
-    position: absolute;
-    bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-radius: 999px;
+  padding: 3px 4px;
+  user-select: none;
+  margin-top: 10px;
+  position: absolute;
+  bottom: 20px;
 }
 
 .fan-nav-arrow {
@@ -4585,7 +4587,7 @@ button.fan-card {
 }
 
 .fan-nav-arrow:hover {
-  background: rgba(15,23,42,0.07);
+  background: rgba(15, 23, 42, 0.07);
   color: var(--brand);
 }
 
@@ -4598,23 +4600,16 @@ button.fan-card {
   letter-spacing: 0.02em;
   padding: 0 4px;
 }
+
 /* ═══════════════════════════════════════════════════════════════
    FAN CARD REDESIGN — physical swatch look
    ═══════════════════════════════════════════════════════════════ */
-
 /* Rounded top, slight bottom for pivot, like a real paint swatch */
 .fan-card {
   border-radius: 14px 14px 5px 5px !important;
-  transition:
-    filter 0.28s cubic-bezier(0.2, 0.85, 0.25, 1),
-    box-shadow 0.35s cubic-bezier(0.2, 0.85, 0.25, 1) !important;
+  transition: filter 0.28s cubic-bezier(0.2, 0.85, 0.25, 1), box-shadow 0.35s cubic-bezier(0.2, 0.85, 0.25, 1) !important;
   /* Subtle paper texture via inner gradient */
-  background-image: linear-gradient(
-    160deg,
-    rgba(255,255,255,0.22) 0%,
-    rgba(255,255,255,0.06) 40%,
-    rgba(0,0,0,0.04) 100%
-  ) !important;
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 40%, rgba(0, 0, 0, 0.04) 100%) !important;
   background-blend-mode: overlay !important;
 }
 
@@ -4625,10 +4620,11 @@ button.fan-card {
   left: 0;
   right: 0;
   padding: 10px 8px 14px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.82) 55%, transparent);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.82) 55%, transparent);
   border-radius: 14px 14px 0 0;
   pointer-events: none;
 }
+
 .card-shade-name {
   display: block;
   font-size: 0.57rem;
@@ -4640,6 +4636,7 @@ button.fan-card {
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
+
 .card-shade-code {
   display: block;
   font-size: 0.5rem;
@@ -4652,11 +4649,9 @@ button.fan-card {
 /* Active card — lift, warm highlight, no scale (scale done via GSAP) */
 .fan-card.active {
   filter: saturate(1.18) brightness(1.04) !important;
-  box-shadow:
-    0 32px 64px rgba(15, 23, 42, 0.28),
-    0 0 0 3.5px rgba(237, 100, 28, 0.75),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 32px 64px rgba(15, 23, 42, 0.28), 0 0 0 3.5px rgba(237, 100, 28, 0.75), inset 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
 }
+
 .fan-card.active::after {
   border: 3.5px solid rgba(237, 100, 28, 0.85) !important;
   border-radius: 14px 14px 5px 5px !important;
@@ -4664,27 +4659,19 @@ button.fan-card {
 
 /* Click flash state */
 .fan-card.card-clicked {
-  box-shadow:
-    0 40px 80px rgba(15, 23, 42, 0.34),
-    0 0 0 4px rgba(237, 100, 28, 0.9),
-    0 0 24px 6px rgba(237, 100, 28, 0.25),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 40px 80px rgba(15, 23, 42, 0.34), 0 0 0 4px rgba(237, 100, 28, 0.9), 0 0 24px 6px rgba(237, 100, 28, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.55) !important;
   filter: saturate(1.22) brightness(1.06) !important;
 }
 
 /* Hover: subtle lift via CSS only (non-active cards) */
 .fan-card:not(.active):hover {
   filter: saturate(1.1) brightness(1.02) !important;
-  box-shadow:
-    0 22px 44px rgba(15, 23, 42, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.44) !important;
+  box-shadow: 0 22px 44px rgba(15, 23, 42, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.44) !important;
 }
-
 
 /* ═══════════════════════════════════════════════════════════════
    RIGHT-SIDE SHADE DRAWER
    ═══════════════════════════════════════════════════════════════ */
-
 .drawer-overlay {
   position: fixed;
   inset: 0;
@@ -4695,6 +4682,7 @@ button.fan-card {
   transition: opacity 0.4s ease;
   backdrop-filter: blur(2px);
 }
+
 .drawer-overlay.active {
   opacity: 1;
   pointer-events: auto;
@@ -4716,6 +4704,7 @@ button.fan-card {
   overflow: hidden;
   will-change: transform;
 }
+
 .shade-drawer.active {
   transform: translateX(0);
 }
@@ -4730,19 +4719,16 @@ button.fan-card {
   flex-direction: column;
   justify-content: flex-end;
   /* Subtle paper/paint light effect */
-  background-image: linear-gradient(
-    140deg,
-    rgba(255,255,255,0.28) 0%,
-    rgba(255,255,255,0.06) 50%,
-    rgba(0,0,0,0.08) 100%
-  );
+  background-image: linear-gradient(140deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 50%, rgba(0, 0, 0, 0.08) 100%);
   background-blend-mode: overlay;
 }
+
 .drawer-swatch-body {
   padding: 0 24px 22px;
   position: relative;
   z-index: 1;
 }
+
 .drawer-close {
   position: absolute;
   top: 14px;
@@ -4761,19 +4747,22 @@ button.fan-card {
   cursor: pointer;
   transition: transform 0.2s ease, background 0.2s ease;
 }
+
 .drawer-close:hover {
   transform: scale(1.08);
   background: #fff;
 }
+
 .drawer-shade-name {
   font-size: 2.6rem;
   font-weight: 800;
   letter-spacing: -0.07em;
   line-height: 1;
   color: rgba(15, 23, 42, 0.88);
-  text-shadow: 0 1px 2px rgba(255,255,255,0.4);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
   text-transform: capitalize;
 }
+
 .drawer-shade-code {
   font-size: 0.95rem;
   font-weight: 700;
@@ -4789,17 +4778,22 @@ button.fan-card {
   padding: 20px 20px 0;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: rgba(15,23,42,0.15) transparent;
+  scrollbar-color: rgba(15, 23, 42, 0.15) transparent;
 }
-.drawer-body::-webkit-scrollbar { width: 6px; }
+
+.drawer-body::-webkit-scrollbar {
+  width: 6px;
+}
+
 .drawer-body::-webkit-scrollbar-thumb {
-  background: rgba(15,23,42,0.15);
+  background: rgba(15, 23, 42, 0.15);
   border-radius: 999px;
 }
 
 .drawer-section {
   margin-bottom: 22px;
 }
+
 .drawer-section-label {
   font-size: 0.65rem;
   font-weight: 900;
@@ -4814,13 +4808,12 @@ button.fan-card {
   display: flex;
   gap: 10px;
 }
+
 .drawer-palette-swatch {
   flex: 1;
   height: 68px;
   border-radius: 14px;
-  box-shadow:
-    0 8px 20px rgba(15, 23, 42, 0.14),
-    inset 0 0 0 1px rgba(0,0,0,0.07);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14), inset 0 0 0 1px rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -4829,25 +4822,21 @@ button.fan-card {
   cursor: pointer;
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  background-image: linear-gradient(
-    160deg,
-    rgba(255,255,255,0.22) 0%,
-    rgba(255,255,255,0) 60%
-  );
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 60%);
   background-blend-mode: overlay;
 }
+
 .drawer-palette-swatch:hover {
   transform: translateY(-3px);
-  box-shadow:
-    0 14px 28px rgba(15, 23, 42, 0.2),
-    inset 0 0 0 1px rgba(0,0,0,0.07);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.07);
 }
+
 .drawer-palette-swatch-label {
   font-size: 0.52rem;
   font-weight: 800;
   color: rgba(15, 23, 42, 0.65);
   text-align: center;
-  background: rgba(255,255,255,0.72);
+  background: rgba(255, 255, 255, 0.72);
   border-radius: 4px;
   padding: 1px 4px;
   white-space: nowrap;
@@ -4862,12 +4851,11 @@ button.fan-card {
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
+
 .drawer-similar-swatch {
   aspect-ratio: 0.52;
   border-radius: 10px 10px 3px 3px;
-  box-shadow:
-    0 6px 16px rgba(15, 23, 42, 0.13),
-    inset 0 0 0 1px rgba(0,0,0,0.06);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.13), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -4875,20 +4863,16 @@ button.fan-card {
   cursor: pointer;
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  background-image: linear-gradient(
-    160deg,
-    rgba(255,255,255,0.22) 0%,
-    rgba(255,255,255,0) 55%
-  );
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 55%);
   background-blend-mode: overlay;
   overflow: hidden;
 }
+
 .drawer-similar-swatch:hover {
   transform: translateY(-4px) scale(1.04);
-  box-shadow:
-    0 14px 28px rgba(15, 23, 42, 0.2),
-    inset 0 0 0 1px rgba(0,0,0,0.06);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
+
 .drawer-similar-name {
   display: block;
   font-size: 0.5rem;
@@ -4898,10 +4882,11 @@ button.fan-card {
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.25;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 3px;
   padding: 0 2px;
 }
+
 .drawer-similar-code {
   display: block;
   font-size: 0.44rem;
@@ -4922,6 +4907,7 @@ button.fan-card {
   border-top: 1px solid rgba(15, 23, 42, 0.07);
   box-shadow: 0 -12px 24px rgba(248, 249, 251, 0.9);
 }
+
 .drawer-action-primary,
 .drawer-action-secondary {
   width: 100%;
@@ -4937,19 +4923,23 @@ button.fan-card {
   cursor: pointer;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
+
 .drawer-action-primary:hover,
 .drawer-action-secondary:hover {
   transform: translateY(-1px);
   opacity: 0.92;
 }
+
 .drawer-action-primary {
   background: #e11d48;
   color: #fff;
   box-shadow: 0 14px 28px rgba(225, 29, 72, 0.28);
 }
+
 .drawer-action-primary.saved {
   background: #16a34a;
 }
+
 .drawer-action-secondary {
   background: #0f172a;
   color: #fff;
@@ -4977,14 +4967,12 @@ body.drawer-open {
     gap: 6px;
   }
 }
-
 /* ═══════════════════════════════════════════════════════════════
    FAN STAGE CENTER / PIVOT IMPROVEMENTS
    ═══════════════════════════════════════════════════════════════ */
-
 /* Wider fan stage now that insight card is gone */
 .fan-stage-wrap {
-  grid-column: 1 / -1;
+  grid-column: 1/-1;
 }
 
 /* Subtle arc ground-line where cards converge */
@@ -5012,22 +5000,19 @@ body.drawer-open {
   height: 26px;
   border-radius: 50%;
   background: linear-gradient(145deg, #e8eaf0 20%, #c8cad4 80%);
-  box-shadow:
-    0 4px 14px rgba(15, 23, 42, 0.22),
-    0 1px 3px rgba(15, 23, 42, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22), 0 1px 3px rgba(15, 23, 42, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(0, 0, 0, 0.12);
   z-index: 400;
   pointer-events: none;
   border: 2px solid rgba(255, 255, 255, 0.92);
 }
+
 /* Inner dot */
 .fan-pivot span {
   position: absolute;
   inset: 6px;
   border-radius: 50%;
   background: linear-gradient(145deg, #b8bac4, #d0d2dc);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 -1px 2px rgba(255,255,255,0.3);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 -1px 2px rgba(255, 255, 255, 0.3);
 }
 
 /* Improve the existing deck shadow to be more of a soft ground glow */
@@ -5035,23 +5020,13 @@ body.drawer-open {
   width: min(600px, 80%) !important;
   height: 70px !important;
   bottom: 62px !important;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(15, 23, 42, 0.18),
-    rgba(15, 23, 42, 0.04) 50%,
-    transparent 74%
-  ) !important;
+  background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.04) 50%, transparent 74%) !important;
   filter: blur(10px) !important;
 }
 
 /* Fan stage: richer, warmer surface */
 .fan-stage {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.14)),
-    radial-gradient(ellipse at 50% 96%, rgba(15,23,42,0.1) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 60%, rgba(255,255,255,0.9), transparent 55%),
-    radial-gradient(ellipse at 20% 10%, rgba(237,180,140,0.07), transparent 40%),
-    radial-gradient(ellipse at 80% 10%, rgba(180,160,240,0.06), transparent 40%) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.14)), radial-gradient(ellipse at 50% 96%, rgba(15, 23, 42, 0.1) 0%, transparent 60%), radial-gradient(ellipse at 50% 60%, rgba(255, 255, 255, 0.9), transparent 55%), radial-gradient(ellipse at 20% 10%, rgba(237, 180, 140, 0.07), transparent 40%), radial-gradient(ellipse at 80% 10%, rgba(180, 160, 240, 0.06), transparent 40%) !important;
 }
 
 /* Selected beacon raised slightly for breathing room */
@@ -5065,18 +5040,21 @@ body.drawer-open {
     height: 22px;
     bottom: 68px;
   }
-  .fan-pivot span { inset: 5px; }
-  .fan-base-arc { bottom: 58px; width: 76%; }
+  .fan-pivot span {
+    inset: 5px;
+  }
+  .fan-base-arc {
+    bottom: 58px;
+    width: 76%;
+  }
 }
-
 /* ═══════════════════════════════════════════════════════════════
    BUG FIXES — white layer, layout, card color
    ═══════════════════════════════════════════════════════════════ */
-
 /* FIX 1: fan-stage-wrap was spanning all columns (grid-column:1/-1),
    force it into column 2 so colour panel stays left and fan fills right */
 .fan-stage-wrap {
-  grid-column: 2 / 3 !important;
+  grid-column: 2/3 !important;
   grid-row: 1 !important;
 }
 
@@ -5094,16 +5072,11 @@ body.drawer-open {
 
 /* Subtle gloss sheen via ::before — doesn't touch background-color */
 .fan-card::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(
-    160deg,
-    rgba(255,255,255,0.16) 0%,
-    rgba(255,255,255,0.03) 38%,
-    rgba(0,0,0,0.025) 100%
-  );
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 38%, rgba(0, 0, 0, 0.025) 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -5118,12 +5091,7 @@ body.drawer-open {
 /* FIX 4: fan stage had a near-opaque white radial gradient (rgba 0.9)
    that created a white blob over the cards. Replace with subtle tint only. */
 .fan-stage {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.08) 100%),
-    radial-gradient(ellipse at 50% 96%, rgba(15,23,42,0.09) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.38), transparent 60%),
-    radial-gradient(ellipse at 22% 12%, rgba(237,180,140,0.06), transparent 38%),
-    radial-gradient(ellipse at 78% 12%, rgba(180,160,240,0.05), transparent 38%) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 100%), radial-gradient(ellipse at 50% 96%, rgba(15, 23, 42, 0.09) 0%, transparent 55%), radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.38), transparent 60%), radial-gradient(ellipse at 22% 12%, rgba(237, 180, 140, 0.06), transparent 38%), radial-gradient(ellipse at 78% 12%, rgba(180, 160, 240, 0.05), transparent 38%) !important;
 }
 
 /* Responsive: on < 1024px the hidden-sm panel disappears, fan gets full width */
@@ -5132,7 +5100,49 @@ body.drawer-open {
     grid-template-columns: minmax(0, 1fr) !important;
   }
   .fan-stage-wrap {
-    grid-column: 1 / -1 !important;
+    grid-column: 1/-1 !important;
     grid-row: 1 !important;
   }
+}
+
+/* Fan card text — vertical + capitalized */
+.fan-card-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 16px;
+  gap: 4px;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.fan-card-name {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: clamp(0.58rem, 0.72vw, 0.78rem);
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 65%;
+  text-transform: capitalize;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.fan-card-code {
+  writing-mode: vertical-rl;
+  font-size: 0.5rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  letter-spacing: 0.04em;
+}
+
+/* Push card text below the + button (button is top:8px, height:26px → bottom at ~36px) */
+.fan-card-inner {
+  padding-top: 44px !important;
 }

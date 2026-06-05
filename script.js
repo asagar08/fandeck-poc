@@ -17,8 +17,8 @@
 const CONFIG = window.ASIAN_PAINTS_FANDECK || {};
 const CATALOGUE_DATA_URL = CONFIG.dataUrl || "apcatalogue.json";
 
-const MAX_CARDS_DESKTOP = 47;
-const MAX_CARDS_MOBILE = 31;
+const MAX_CARDS_DESKTOP = 17;
+const MAX_CARDS_MOBILE = 9;
 const FAVORITE_KEY = "asianpaints-fandeck-favorites-v1";
 const PALETTE_KEY = "asianpaints-fandeck-selection-v1";
 const MAX_SELECTION = 8;
@@ -883,7 +883,16 @@ function selectById(id, options = {}) {
 }
 
 function stepShade(step) {
+  animateFanRotation(step);
   setSelectedIndex(state.selectedIndex + step, { source: "step" });
+}
+
+function animateFanRotation(direction) {
+  if (!window.gsap || state.isDragging) return;
+  gsap.fromTo(dom.fanDeck[0],
+    { rotation: direction * -8 },
+    { rotation: 0, duration: 0.45, ease: "power2.out", clearProps: "rotation" }
+  );
 }
 
 function renderDeck(options = {}) {
@@ -903,8 +912,8 @@ function renderDeck(options = {}) {
   // centerSlot = visual middle of the rendered window so fan is always symmetric
   // and highlighted card sits exactly at the centre regardless of list position.
   const centerSlot = Math.floor((end - start) / 2);
-  const maxSpread = window.matchMedia("(max-width: 820px)").matches ? 58 : 63;
-  const gap = visibleCount > 1 ? Math.min(6.2, (maxSpread * 2) / Math.max(1, visibleCount - 1)) : 0;
+  const maxSpread = 85;
+  const gap = visibleCount > 1 ? (maxSpread * 2) / Math.max(1, visibleCount - 1) : 0;
 
   const sameWindow = !options.force
     && state.deckWindow.key === windowKey
@@ -963,14 +972,12 @@ function fanCardMarkup(shade, slot, context) {
   const rel = slot - centerSlot;
   const isActive = shade.id === selectedShade?.id;
   const angle = isActive ? 0 : rel * gap;
-  const lift = isActive ? -26 : Math.max(-9, -Math.abs(rel) * 0.16);
+  const lift = isActive ? -10 : 0;
   const isFavorite = state.favorites.has(shade.id);
   const isShortlisted = isShadeShortlisted(shade);
   const z = 300 - Math.abs(rel);
-  const tintA = shiftColor(shade.hex, 17, 6);
-  const tintB = shiftColor(shade.hex, 10, 3);
-  const tintC = shade.hex;
-  const tintD = shiftColor(shade.hex, -8, -2);
+  const textColor = readableText(shade.hex);
+  const codeColor = textColor === "#ffffff" ? "rgba(255,255,255,0.6)" : "rgba(15,23,42,0.45)";
 
   return `
     <button class="fan-card${isActive ? " active" : ""}${isFavorite ? " favorite" : ""}${isShortlisted ? " shortlisted" : ""}" type="button"
@@ -979,9 +986,9 @@ function fanCardMarkup(shade, slot, context) {
       title="${escapeAttr(`${shade.name} ${shade.code}`)}"
       style="--angle:${angle.toFixed(3)}deg;--lift:${lift}px;--card-bg:${shade.hex};z-index:${z};">
       <span class="card-fav" aria-label="Shortlist ${escapeAttr(shade.name)}"><i class="${isShortlisted ? "ri-check-line" : "ri-add-line"}"></i></span>
-      <div class="card-top-label">
-        <span class="card-shade-name">${escapeHtml(shade.name)}</span>
-        <span class="card-shade-code">${escapeHtml(shade.code)}</span>
+      <div class="fan-card-inner">
+        <span class="fan-card-name" style="color:${textColor}">${escapeHtml(shade.name)}</span>
+        <span class="fan-card-code" style="color:${codeColor}">${escapeHtml(shade.code)}</span>
       </div>
     </button>`;
 }
@@ -993,7 +1000,7 @@ function updateDeckCardStates({ shades, start, end, centerSlot, gap, selectedSha
     const rel = slot - centerSlot;
     const isActive = shade.id === selectedShade?.id;
     const angle = isActive ? 0 : rel * gap;
-    const lift = isActive ? -26 : Math.max(-9, -Math.abs(rel) * 0.16);
+    const lift = isActive ? -10 : 0;
     const isFavorite = state.favorites.has(shade.id);
     const isShortlisted = isShadeShortlisted(shade);
     const z = 300 - Math.abs(rel);
@@ -1810,6 +1817,14 @@ if (!window.gsap || !window.Draggable) {
   let lastX = 0;
   let hasDragged = false;
 
+  // Set GSAP transform-origin to match the card pivot point (deck-origin below
+  // the fan-deck element). For a 1px-tall element, deck-origin px = N*100% of height.
+  const deckOriginPx = parseFloat(
+    getComputedStyle(dom.fanDeck[0]).getPropertyValue("--deck-origin")
+  ) || 13;
+  const pivotPct = 100 + deckOriginPx * 100; // e.g. 13px → 1400% of 1px height
+  gsap.set(dom.fanDeck[0], { transformOrigin: `50% ${pivotPct}%` });
+
   state.dragProxy = Draggable.create(proxy, {
     trigger: dom.fanStage[0],
     type: "x",
@@ -1822,11 +1837,14 @@ if (!window.gsap || !window.Draggable) {
       lastX = this.x;
       hasDragged = false;
       dom.fanStage.addClass("dragging");
+      gsap.killTweensOf(dom.fanDeck[0]);
     },
     onDrag() {
       const distance = this.x - lastX;
       if (Math.abs(distance) > 6) hasDragged = true;
-      const stepSize = 28;
+      const visualRot = (this.x - lastX) * -0.2;
+      gsap.set(dom.fanDeck[0], { rotation: visualRot });
+      const stepSize = 32;
       const next = startIndex - Math.round(distance / stepSize);
       setSelectedIndex(next, { source: "drag" });
     },
@@ -1834,6 +1852,7 @@ if (!window.gsap || !window.Draggable) {
       state.isDragging = false;
       dom.fanStage.removeClass("dragging");
       if (hasDragged) state.suppressFanClickUntil = Date.now() + 260;
+      gsap.to(dom.fanDeck[0], { rotation: 0, duration: 0.5, ease: "power2.out", clearProps: "rotation" });
       gsap.set(proxy, { x: 0 });
     }
   })[0];
