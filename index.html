@@ -114,6 +114,8 @@
       <div class="fan-stage-wrap">
       <div id="fanStage" class="fan-stage" tabindex="0" aria-label="Fan deck. Drag or use arrow keys to browse shades.">
         <div class="deck-shadow"></div>
+        <div class="fan-base-arc"></div>
+        <div class="fan-pivot"><span></span></div>
         <div id="fanDeck" class="fan-deck" aria-live="polite"></div>
         <button id="selectedBeacon" class="selected-beacon" type="button" aria-label="Open selected shade">
           <span class="beacon-swatch"></span>
@@ -343,6 +345,38 @@
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Right-side shade drawer: slides in from right after card click -->
+  <div id="drawerOverlay" class="drawer-overlay" aria-hidden="true"></div>
+  <aside id="shadeDrawer" class="shade-drawer" role="complementary" aria-label="Shade details" aria-hidden="true">
+    <div class="drawer-swatch" id="drawerSwatch">
+      <button id="closeDrawer" class="drawer-close" type="button" aria-label="Close shade details">
+        <i class="ri-close-line"></i>
+      </button>
+      <div class="drawer-swatch-body">
+        <div id="drawerShadeName" class="drawer-shade-name">Mauve</div>
+        <div id="drawerShadeCode" class="drawer-shade-code">9241</div>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-section">
+        <div class="drawer-section-label">Complementary Palette</div>
+        <div id="drawerPalette" class="drawer-palette-row"></div>
+      </div>
+      <div class="drawer-section">
+        <div class="drawer-section-label">Similar Shades</div>
+        <div id="drawerSimilar" class="drawer-similar-grid"></div>
+      </div>
+    </div>
+    <div class="drawer-actions">
+      <button id="drawerShortlist" class="drawer-action-primary" type="button">
+        <i class="ri-heart-3-line"></i> Add to Shortlist
+      </button>
+      <button id="drawerStore" class="drawer-action-secondary" type="button">
+        <i class="ri-map-pin-2-line"></i> Buy at Nearest Store
+      </button>
+    </div>
+  </aside>
 
   <script type="application/ld+json" id="shadeJsonLd">
   {

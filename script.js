@@ -168,6 +168,8 @@ const state = {
   isDragging: false,
   lastQuery: "",
   suppressFanClickUntil: 0,
+  drawerTimer: null,
+  currentDrawerColor: null,
   dataSource: "",
   deckWindow: { key: "", start: 0, end: 0 },
   swipeFrame: null,
@@ -286,6 +288,16 @@ function cacheDom() {
   dom.modalFavorite = $("#modalFavorite");
   dom.modalNext = $("#modalNext");
   dom.toast = $("#toast");
+  // Shade drawer
+  dom.shadeDrawer = $("#shadeDrawer");
+  dom.drawerOverlay = $("#drawerOverlay");
+  dom.closeDrawer = $("#closeDrawer");
+  dom.drawerSwatch = $("#drawerSwatch");
+  dom.drawerShadeName = $("#drawerShadeName");
+  dom.drawerShadeCode = $("#drawerShadeCode");
+  dom.drawerPalette = $("#drawerPalette");
+  dom.drawerSimilar = $("#drawerSimilar");
+  dom.drawerShortlist = $("#drawerShortlist");
 }
 
 function registerPlugins() {
@@ -317,12 +329,10 @@ function bindEvents() {
   });
 
 document.getElementById('categoryTabs').addEventListener('wheel', function(e) {
-  const delta = e.deltaY || e.deltaX || 0;
-  if (Math.abs(delta) < 2) return;
-  if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
-    e.preventDefault();
-    this.scrollLeft += delta;
-  }
+  e.preventDefault();
+  // Use whichever axis has more movement — works for mouse wheel AND trackpad
+  const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  this.scrollLeft += delta;
 }, { passive: false });
 
   dom.progressTrack.on("click", function (event) {
@@ -343,6 +353,12 @@ document.getElementById('categoryTabs').addEventListener('wheel', function(e) {
   });
   dom.closeModal.on("click", closeModal);
   dom.closeSelectionModal.on("click", closeSelectionModal);
+  dom.closeDrawer.on("click", closeDrawer);
+  dom.drawerOverlay.on("click", closeDrawer);
+  dom.drawerShortlist.on("click", () => {
+    shortlistShade(state.currentDrawerColor || getSelectedShade(), dom.drawerShortlist[0]);
+    updateDrawerShortlistState();
+  });
   dom.overlay.on("click", event => {
     if (event.target === dom.overlay[0]) closeModal();
   });
@@ -371,7 +387,6 @@ document.getElementById('categoryTabs').addEventListener('wheel', function(e) {
   });
 
   dom.fanDeck.on("click", ".fan-card", function (event) {
-    console.log("suppress:", shouldSuppressFanClick());
     if (shouldSuppressFanClick()) {
       event.preventDefault();
       return;
@@ -381,7 +396,8 @@ document.getElementById('categoryTabs').addEventListener('wheel', function(e) {
     const index = state.filtered.findIndex(shade => shade.id === id);
     if (index >= 0) {
       setSelectedIndex(index, { source: "card" });
-      openModal(getSelectedShade());
+      animateCardClick(this);
+      openDrawer(getSelectedShade());
     }
   });
 
@@ -441,7 +457,7 @@ document.getElementById('categoryTabs').addEventListener('wheel', function(e) {
 
   $(document).on("keydown", event => {
     const isTyping = ["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName);
-    if (event.key === "Escape") { closeModal(); closeSelectionModal(); }
+    if (event.key === "Escape") { closeModal(); closeSelectionModal(); closeDrawer(); clearTimeout(state.drawerTimer); }
     if (event.key === "/" && !isTyping) {
       event.preventDefault();
       dom.search.trigger("focus");
@@ -713,13 +729,10 @@ function buildCategoryTabs() {
 
    // FIX: Mouse wheel se tabs horizontally scroll hongi
   dom.tabs.off("wheel.tabScroll").on("wheel.tabScroll", function (event) {
+    event.preventDefault();
     const e = event.originalEvent;
-    const delta = e.deltaY || e.deltaX || 0;
-    if (Math.abs(delta) < 2) return;
-    if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
-      event.preventDefault();
-      this.scrollLeft += delta;
-    }
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    this.scrollLeft += delta;
   });
 }
 
@@ -966,7 +979,8 @@ function fanCardMarkup(shade, slot, context) {
       title="${escapeAttr(`${shade.name} ${shade.code}`)}"
       style="--angle:${angle.toFixed(3)}deg;--lift:${lift}px;--card-bg:${shade.hex};z-index:${z};">
       <span class="card-fav" aria-label="Shortlist ${escapeAttr(shade.name)}"><i class="${isShortlisted ? "ri-check-line" : "ri-add-line"}"></i></span>
-      <div class="card-label-area">
+      <div class="card-top-label">
+        <span class="card-shade-name">${escapeHtml(shade.name)}</span>
         <span class="card-shade-code">${escapeHtml(shade.code)}</span>
       </div>
     </button>`;
@@ -1168,6 +1182,7 @@ function closeModal() {
 function openSelectionModal() {
   renderSelectedPalette();
   closeModal();
+  clearTimeout(state.drawerTimer);
   dom.body.addClass("modal-open");
   dom.selectionOverlay.addClass("active").attr("aria-hidden", "false");
   const selectionNode = dom.selectionOverlay.find(".selection-modal")[0];
@@ -1188,6 +1203,188 @@ function closeSelectionModal(options = {}) {
     return;
   }
   gsap.to(".selection-modal", { y: 18, scale: .98, opacity: 0, duration: .2, ease: "power2.in", onComplete: complete });
+}
+
+// ── Card click bounce animation ──────────────────────────────────────────────
+function animateCardClick(cardEl) {
+  // Add highlight class immediately for visual feedback
+  $(cardEl).addClass("card-clicked");
+  setTimeout(() => $(cardEl).removeClass("card-clicked"), 600);
+
+  if (!window.gsap) return;
+  // GSAP scale bounce — scale up then spring back
+  gsap.killTweensOf(cardEl);
+  // Read the live computed transform so GSAP doesn't clobber CSS-variable-based positioning
+  const current = window.getComputedStyle(cardEl).transform;
+  gsap.fromTo(cardEl,
+    { transform: current + " scale(1)" },
+    {
+      transform: current + " scale(1.08)",
+      duration: 0.2,
+      ease: "back.out(2.5)",
+      onComplete() {
+        gsap.to(cardEl, {
+          transform: current + " scale(1)",
+          duration: 0.55,
+          ease: "elastic.out(1, 0.45)",
+          onComplete() {
+            // Remove inline transform so CSS variables take over again
+            cardEl.style.transform = "";
+          }
+        });
+      }
+    }
+  );
+}
+
+// ── Shade Drawer ─────────────────────────────────────────────────────────────
+function openDrawer(shade) {
+  if (!shade) return;
+  // Close any open modal first
+  closeModal();
+
+  state.currentDrawerColor = shade;
+  buildDrawerContent(shade);
+  updateDrawerShortlistState();
+
+  dom.body.addClass("drawer-open");
+  dom.drawerOverlay.addClass("active").attr("aria-hidden", "false");
+  dom.shadeDrawer.addClass("active").attr("aria-hidden", "false");
+
+  if (window.gsap) {
+    gsap.fromTo(dom.shadeDrawer[0],
+      { x: "100%" },
+      { x: "0%", duration: 0.55, ease: "expo.out", clearProps: "x" }
+    );
+    gsap.fromTo(dom.drawerOverlay[0],
+      { opacity: 0 },
+      { opacity: 1, duration: 0.4, ease: "power2.out" }
+    );
+  }
+}
+
+function closeDrawer() {
+  if (!dom.shadeDrawer.hasClass("active")) return;
+  clearTimeout(state.drawerTimer);
+
+  const complete = () => {
+    dom.shadeDrawer.removeClass("active").attr("aria-hidden", "true");
+    dom.drawerOverlay.removeClass("active").attr("aria-hidden", "true");
+    dom.body.removeClass("drawer-open");
+    state.currentDrawerColor = null;
+  };
+
+  if (window.gsap) {
+    gsap.to(dom.shadeDrawer[0], {
+      x: "100%",
+      duration: 0.38,
+      ease: "power3.in",
+      onComplete: complete
+    });
+    gsap.to(dom.drawerOverlay[0], { opacity: 0, duration: 0.32, ease: "power2.in" });
+  } else {
+    complete();
+  }
+}
+
+function buildDrawerContent(shade) {
+  // Color swatch
+  dom.drawerSwatch.css("--drawer-color", shade.hex);
+  dom.drawerShadeName.text(shade.name);
+  dom.drawerShadeCode.text(shade.code);
+
+  // Complementary palette — 3 swatches: complementary, analogous warm, analogous cool
+  const compColors = [
+    { hex: shiftHue(shade.hex, 180, 0, 0), label: "Complementary" },
+    { hex: shiftHue(shade.hex, 30, 4, 4),  label: "Analogous Warm" },
+    { hex: shiftHue(shade.hex, -30, 2, -4), label: "Analogous Cool" }
+  ];
+  dom.drawerPalette.html(compColors.map(c => `
+    <button class="drawer-palette-swatch" type="button"
+      style="background-color:${c.hex};"
+      title="${escapeAttr(c.label)}">
+      <span class="drawer-palette-swatch-label">${escapeHtml(c.label)}</span>
+    </button>
+  `).join(""));
+
+  // Similar shades — find 8 closest by hue+lightness
+  const similar = findSimilarShades(shade, 8);
+  dom.drawerSimilar.html(similar.map(s => `
+    <button class="drawer-similar-swatch" type="button"
+      data-id="${escapeAttr(s.id)}"
+      style="background-color:${s.hex};"
+      title="${escapeAttr(`${s.name} ${s.code}`)}">
+      <span class="drawer-similar-name">${escapeHtml(s.name)}</span>
+      <span class="drawer-similar-code">${escapeHtml(s.code)}</span>
+    </button>
+  `).join(""));
+
+  // Click on similar shade — navigate to it
+  dom.drawerSimilar.off("click.similar").on("click.similar", ".drawer-similar-swatch", function() {
+    const id = $(this).data("id");
+    if (id) {
+      selectById(id, { source: "drawer-similar" });
+      closeDrawer();
+      clearTimeout(state.drawerTimer);
+      state.drawerTimer = setTimeout(() => openDrawer(getSelectedShade()), 1500);
+    }
+  });
+
+  // Click on comp palette — navigate to closest matching catalogue shade
+  dom.drawerPalette.off("click.comp").on("click.comp", ".drawer-palette-swatch", function() {
+    const hex = this.style.backgroundColor;
+    const closest = findClosestShadeByHex(hex);
+    if (closest) {
+      selectById(closest.id, { source: "drawer-comp" });
+      closeDrawer();
+      clearTimeout(state.drawerTimer);
+      state.drawerTimer = setTimeout(() => openDrawer(getSelectedShade()), 1500);
+    }
+  });
+}
+
+function updateDrawerShortlistState() {
+  const shade = state.currentDrawerColor || getSelectedShade();
+  if (!shade || !dom.drawerShortlist?.length) return;
+  const saved = isShadeShortlisted(shade);
+  dom.drawerShortlist
+    .toggleClass("saved", saved)
+    .html(`<i class="${saved ? "ri-check-line" : "ri-heart-3-line"}"></i> ${saved ? "Shortlisted" : "Add to Shortlist"}`);
+}
+
+function findSimilarShades(shade, count = 8) {
+  const { h, s, l } = shade.hsl;
+  return state.all
+    .filter(candidate => candidate.id !== shade.id)
+    .map(candidate => {
+      const hueDiff = Math.min(
+        Math.abs(candidate.hsl.h - h),
+        360 - Math.abs(candidate.hsl.h - h)
+      );
+      const lightDiff = Math.abs(candidate.hsl.l - l);
+      const satDiff   = Math.abs(candidate.hsl.s - s);
+      const score     = hueDiff * 1.8 + lightDiff * 0.9 + satDiff * 0.5;
+      return { shade: candidate, score };
+    })
+    .sort((a, b) => a.score - b.score)
+    .slice(0, count)
+    .map(item => item.shade);
+}
+
+function findClosestShadeByHex(cssRgb) {
+  // cssRgb may be "rgb(r, g, b)" from style.backgroundColor
+  const m = String(cssRgb).match(/\d+/g);
+  if (!m || m.length < 3) return null;
+  const [r, g, b] = m.map(Number);
+  const hsl = rgbToHsl(r, g, b);
+  return state.all.reduce((best, candidate) => {
+    const hueDiff = Math.min(
+      Math.abs(candidate.hsl.h - hsl.h),
+      360 - Math.abs(candidate.hsl.h - hsl.h)
+    );
+    const score = hueDiff + Math.abs(candidate.hsl.l - hsl.l) * 0.5;
+    return !best || score < best.score ? { ...candidate, score } : best;
+  }, null);
 }
 
 function shortlistShade(shade, origin) {
